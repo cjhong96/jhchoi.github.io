@@ -437,13 +437,15 @@ a {
 }
 
 .filter-group legend {
-  float: left;
-  width: 100%;
+  float: none;
+  width: auto;
+  display: block;
   margin-bottom: 11px;
   padding: 0;
 }
 
 .chip-row {
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
