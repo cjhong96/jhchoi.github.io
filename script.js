@@ -1,3 +1,17 @@
+const moduleCacheKey = Date.now();
+let loadedPapers = [];
+let paperLoadFailures = [];
+
+try {
+  const { loadPapers } = await import(`./papers/index.js?v=${moduleCacheKey}`);
+  const loadResult = await loadPapers(moduleCacheKey);
+  loadedPapers = loadResult.papers;
+  paperLoadFailures = loadResult.failures;
+} catch (error) {
+  console.error("논문 파일 목록을 불러오지 못했습니다.", error);
+  paperLoadFailures = ["./papers/index.js"];
+}
+
 (() => {
   const allowedTopics = new Set([
     "holographic",
@@ -54,7 +68,7 @@
     return node;
   }
 
-  const source = Array.isArray(window.PAPER_LOG) ? window.PAPER_LOG : [];
+  const source = Array.isArray(loadedPapers) ? loadedPapers : [];
   const papers = source
     .filter((paper) => paper && typeof paper === "object" && toText(paper.title))
     .map((paper, index) => {
@@ -80,6 +94,12 @@
 
   const paperList = document.querySelector("#paper-list");
   if (!paperList) return;
+
+  const loadWarning = document.querySelector("#paper-load-warning");
+  if (loadWarning && paperLoadFailures.length > 0) {
+    loadWarning.textContent = `불러오지 못한 논문 파일 ${paperLoadFailures.length}개: ${paperLoadFailures.join(", ")}`;
+    loadWarning.hidden = false;
+  }
 
   function createPaperCard(paper) {
     const card = element("article", "paper-card");

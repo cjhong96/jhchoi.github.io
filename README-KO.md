@@ -15,22 +15,41 @@
 
 ## 논문을 작성하는 곳
 
-논문 카드에 필요한 정보는 **[papers.js](papers.js)**에서 관리합니다. 실제 논문 정리는 원하는 형식의 별도 파일이나 페이지에 작성하고 `noteUrl`로 연결할 수 있습니다. `index.html`이나 통계 숫자를 직접 수정할 필요는 없습니다.
+논문마다 `papers/` 폴더 안에 별도 파일을 하나씩 둡니다. `index.html`이나 통계 숫자를 직접 수정할 필요는 없습니다.
+
+```text
+papers/
+├─ index.js                 ← 사이트에 불러올 논문 파일 목록
+├─ template.js              ← 새 논문을 만들 때 복사하는 빈 양식
+├─ holographic-antenna.js   ← Holographic Antennas용 빈 파일
+└─ inverse-design.js        ← Inverse Design용 빈 파일
+```
+
+두 빈 논문 파일은 `title`을 작성하기 전까지 사이트에 표시되지 않습니다.
 
 ### 가장 쉬운 방법
 
-정리할 논문의 PDF나 DOI와 함께 아래 정보를 Codex에 전달하면 `papers.js`에 바로 추가할 수 있습니다.
+정리할 논문의 PDF나 DOI와 함께 아래처럼 요청하면 새 파일 생성, 목록 등록, 사이트 반영까지 처리할 수 있습니다.
 
-1. 읽기 상태: `정리 완료`, `읽는 중`, `대기` 중 하나
-2. 연구 주제
-3. 별도로 작성한 노트의 파일이나 페이지 주소(있는 경우)
+```text
+이 논문을 새 파일로 추가해줘.
+파일 이름: my-paper-title.js
+상태: 읽는 중
+주제: inverse-design
+PDF 또는 DOI: ...
+```
 
 ### 직접 작성하는 방법
 
-1. [papers.js](papers.js)를 엽니다.
-2. 파일 안의 빈 템플릿 바로 앞과 뒤에 있는 주석 표시 두 줄을 지웁니다.
-3. 따옴표 안의 제목, 서지정보, 링크, 날짜와 노트 내용을 채웁니다.
-4. 저장한 뒤 GitHub에 올리면 사이트에 자동으로 나타납니다.
+첫 두 논문은 [holographic-antenna.js](papers/holographic-antenna.js) 또는 [inverse-design.js](papers/inverse-design.js)를 열고 내용을 채우기만 하면 됩니다. 두 파일은 이미 목록에 등록되어 있습니다.
+
+새 논문을 추가할 때는 다음 순서로 작업합니다.
+
+1. [template.js](papers/template.js)를 복사합니다.
+2. `papers/` 폴더에 `my-paper-title.js`처럼 새 이름으로 저장합니다. 파일 이름은 영문 소문자와 하이픈 사용을 권장합니다.
+3. 새 파일에서 `title`과 필요한 내용을 작성합니다.
+4. [index.js](papers/index.js)의 `paperFiles` 배열에 `"./my-paper-title.js",` 한 줄을 추가합니다.
+5. 저장한 뒤 GitHub에 올리면 사이트에 자동으로 나타납니다.
 
 `title`만 필수이고 나머지는 준비된 만큼만 채워도 됩니다.
 
@@ -42,13 +61,17 @@
 - `url`: `10.xxxx/...` 형식의 DOI 또는 `https://`로 시작하는 원문 주소. 없으면 비워 둡니다.
 - `noteUrl`: 본인이 작성한 별도 논문 노트의 파일 경로나 페이지 주소. 없으면 비워 둡니다.
 - `tags`: `["beam synthesis", "surface wave"]`처럼 입력합니다. 없어도 됩니다.
-- `summary`: 카드에 표시할 짧은 소개. 형식 없이 자유롭게 적거나 비워 둘 수 있습니다.
+- `summary`: 카드에 표시할 짧은 한두 문장. 없어도 됩니다.
+
+전체 논문 정리는 JavaScript 파일 안에 억지로 맞추지 않습니다. 본인이 편한 Markdown, HTML, 문서 서비스 등으로 별도 작성한 뒤 그 주소를 `noteUrl`에 넣으면 카드에 `노트 보기` 링크가 생깁니다.
 
 저장하면 논문 카드, 전체 개수, 읽는 중 개수, 최근 날짜와 주제별 개수가 자동으로 바뀝니다. 사이트는 논문 정리 형식을 강제하지 않습니다.
 
 ## 파일 구성
 
-- [papers.js](papers.js): 직접 작성하는 논문 데이터
+- [papers/index.js](papers/index.js): 사이트에 불러올 논문 파일 목록
+- [papers/template.js](papers/template.js): 새 논문용 빈 양식
+- `papers/*.js`: 논문별 개별 노트
 - `index.html`: 페이지의 고정 구조
 - `style.css`: 에디토리얼 레이아웃과 반응형 스타일
 - `script.js`: 카드 생성, 자동 통계, 검색, 필터, 정렬
