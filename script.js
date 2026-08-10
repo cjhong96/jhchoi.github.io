@@ -257,7 +257,7 @@ try {
       control.disabled = libraryIsEmpty;
     });
     topicJumpButtons.forEach((button) => {
-      button.disabled = libraryIsEmpty;
+      button.disabled = !papers.some((paper) => paper.topics.includes(button.dataset.topicJump));
     });
 
     if (libraryIsEmpty) {
