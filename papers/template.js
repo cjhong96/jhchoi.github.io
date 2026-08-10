@@ -7,8 +7,6 @@
 export default {
   title: "", // 필수: 논문 제목
   citation: "", // 저자 · 학술지 또는 학회 · 출판연도
-  url: "", // DOI(10.xxxx/...) 또는 원문 주소
-  noteUrl: "", // 별도로 만든 노트 페이지가 있다면 경로 또는 주소
   status: "queue", // done: 정리 완료 | reading: 읽는 중 | queue: 대기
   topics: [], // holographic | metasurfaces | inverse-design | ai-em
   updated: "", // 이 노트를 수정한 날짜, YYYY-MM-DD

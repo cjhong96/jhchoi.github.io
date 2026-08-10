@@ -5,8 +5,6 @@
 export default {
   title: "",
   citation: "",
-  url: "",
-  noteUrl: "",
   status: "queue",
   topics: ["inverse-design"],
   updated: "",

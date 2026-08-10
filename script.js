@@ -39,28 +39,6 @@ try {
     return match ? `${match[1]}.${match[2]}` : "—";
   }
 
-  function safeUrl(value, { allowRelative = false } = {}) {
-    if (!value) return "";
-
-    const cleaned = value.replace(/^doi:\s*/i, "").trim();
-    if (/^10\.\d{4,9}\/\S+$/i.test(cleaned)) {
-      return `https://doi.org/${cleaned}`;
-    }
-
-    const candidate = /^doi\.org\//i.test(cleaned) ? `https://${cleaned}` : cleaned;
-
-    try {
-      const hasWebProtocol = /^https?:\/\//i.test(candidate);
-      if (!hasWebProtocol && !allowRelative) return "";
-      if (!hasWebProtocol && /^[a-z][a-z\d+.-]*:/i.test(candidate)) return "";
-
-      const url = new URL(candidate, window.location.href);
-      return url.protocol === "http:" || url.protocol === "https:" ? url.href : "";
-    } catch {
-      return "";
-    }
-  }
-
   function element(tagName, className, text) {
     const node = document.createElement(tagName);
     if (className) node.className = className;
@@ -81,8 +59,6 @@ try {
         number: index + 1,
         title: toText(paper.title),
         citation: toText(paper.citation),
-        url: safeUrl(toText(paper.url)),
-        noteUrl: safeUrl(toText(paper.noteUrl), { allowRelative: true }),
         status: Object.hasOwn(statusLabels, paper.status) ? paper.status : "queue",
         topics,
         updated: /^\d{4}-\d{2}-\d{2}$/.test(updated) ? updated : "",
@@ -123,28 +99,6 @@ try {
 
     if (paper.summary) {
       card.append(element("p", "paper-summary", paper.summary));
-    }
-
-    if (paper.noteUrl || paper.url) {
-      const actions = element("div", "paper-actions");
-
-      if (paper.noteUrl) {
-        const noteLink = element("a", "", "노트 보기 ↗");
-        noteLink.href = paper.noteUrl;
-        noteLink.setAttribute("aria-label", `내 노트 보기 — ${paper.title}`);
-        actions.append(noteLink);
-      }
-
-      if (paper.url && paper.url !== paper.noteUrl) {
-        const sourceLink = element("a", "", "원문 보기 ↗");
-        sourceLink.href = paper.url;
-        sourceLink.target = "_blank";
-        sourceLink.rel = "noopener noreferrer";
-        sourceLink.setAttribute("aria-label", `원문 보기 — ${paper.title}`);
-        actions.append(sourceLink);
-      }
-
-      card.append(actions);
     }
 
     const footer = element("footer", "paper-footer");

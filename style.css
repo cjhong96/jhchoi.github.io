@@ -627,27 +627,6 @@ a {
   white-space: pre-line;
 }
 
-.paper-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  margin-top: 18px;
-}
-
-.paper-actions a {
-  min-height: 40px;
-  display: inline-flex;
-  align-items: center;
-  color: var(--accent);
-  font-size: 0.76rem;
-  font-weight: 700;
-  text-underline-offset: 4px;
-}
-
-.paper-actions a:hover {
-  color: var(--accent-dark);
-}
-
 .paper-footer {
   margin-top: auto;
   padding-top: 22px;
