@@ -20,12 +20,10 @@
 ```text
 papers/
 ├─ index.txt                 ← 사이트에 표시할 Markdown 파일 이름 목록
-├─ template.md               ← 새 논문을 만들 때 복사하는 빈 양식
-├─ holographic-antenna.md    ← Holographic Antennas용 빈 파일
-└─ inverse-design.md         ← Inverse Design용 빈 파일
+└─ template.md               ← 새 논문을 만들 때 복사하는 빈 양식
 ```
 
-두 빈 논문 파일은 `title`을 작성하기 전까지 사이트에 표시되지 않습니다.
+새 논문은 `template.md`를 복사해 만들며, `index.txt`에는 실제로 표시할 파일만 등록합니다.
 
 ### 가장 쉬운 방법
 
@@ -41,15 +39,11 @@ PDF 또는 DOI: ...
 
 ### 직접 작성하는 방법
 
-첫 두 논문은 [holographic-antenna.md](papers/holographic-antenna.md) 또는 [inverse-design.md](papers/inverse-design.md)를 열고 바로 작성하면 됩니다. 두 파일 이름은 이미 목록에 들어 있습니다.
-
 새 논문을 추가할 때는 다음 세 단계만 필요합니다.
 
 1. [template.md](papers/template.md)를 복사해 `papers/my-paper-title.md`처럼 저장합니다. 파일 이름은 영문 소문자·숫자·하이픈만 사용합니다.
 2. 파일 위쪽에는 기본 정보를, 두 번째 `---` 아래에는 리뷰 본문을 Markdown으로 작성합니다.
 3. [index.txt](papers/index.txt) 끝에 확장자를 뺀 `my-paper-title`을 한 줄 추가합니다.
-
-기존에 만든 `papers/1.js` 같은 JS 파일은 새 목록에서 읽지 않습니다. 같은 이름의 `papers/1.md`를 만들고 `index.txt`에 `1`을 추가하면 됩니다.
 
 예시는 다음과 같습니다.
 
@@ -106,7 +100,7 @@ card:
 - `paper-data.js`: Markdown을 읽어 카드 데이터로 바꾸는 사이트 내부 코드
 - `review.html`: 모든 논문이 함께 사용하는 상세 리뷰 화면
 - `index.html`: 페이지의 고정 구조
-- `style.css`: 에디토리얼 레이아웃과 반응형 스타일
+- `style.css`: 아카이브 레이아웃과 반응형 스타일
 - `script.js`: 카드 생성, 자동 통계, 검색, 필터, 정렬
 
 ## 디자인 참고
