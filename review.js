@@ -1,6 +1,6 @@
 (() => {
   const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-  const cacheKey = Date.now();
+  const cacheKey = "20260810-2";
   const statusLabels = {
     done: "정리 완료",
     reading: "읽는 중",
@@ -201,8 +201,8 @@
 
     let loadResult;
     try {
-      const { loadPapers } = await import(`./papers/index.js?v=${cacheKey}`);
-      loadResult = await loadPapers(cacheKey);
+      const { loadPaper } = await import(`./paper-data.js?v=${cacheKey}`);
+      loadResult = await loadPaper(slug, cacheKey);
     } catch (error) {
       console.error("논문 목록을 불러오지 못했습니다.", error);
       showPageError(
@@ -213,58 +213,35 @@
       return;
     }
 
-    const paper = loadResult.papers.find(
-      (candidate) => candidate?.slug === slug && toText(candidate.title),
-    );
-    if (!paper) {
-      if (loadResult.failures.includes(`./${slug}.js`)) {
-        showPageError(
-          "리뷰 정보를 불러오지 못했습니다.",
-          "논문 정보 파일을 읽는 중 문제가 발생했습니다.",
-          { retry: true },
-        );
-        return;
-      }
+    if (!loadResult.registered) {
       showPageError("리뷰를 찾을 수 없습니다.", "등록된 논문과 연결되지 않은 리뷰입니다.");
+      return;
+    }
+
+    const paper = loadResult.paper;
+    if (!paper) {
+      const failure = loadResult.failureDetails[0];
+      const retry = ["timeout", "network", "http", "read", "unknown"].includes(failure?.code);
+      const message = failure?.code === "not-found"
+        ? "등록 목록에 있는 Markdown 파일을 찾을 수 없습니다."
+        : failure?.code === "parse"
+          ? "Markdown 파일 위쪽의 기본 정보 형식을 확인해 주세요."
+          : failure?.code === "too-large"
+            ? "리뷰 파일이 너무 커서 표시할 수 없습니다."
+            : "논문 Markdown 파일을 읽는 중 문제가 발생했습니다.";
+      showPageError("리뷰 정보를 불러오지 못했습니다.", message, { retry });
+      return;
+    }
+
+    if (!toText(paper.title)) {
+      showPageError("아직 제목이 입력되지 않았습니다.", "Markdown 파일 위쪽의 title을 작성해 주세요.");
       return;
     }
 
     renderMetadata(paper);
 
-    const markdownUrl = new URL(`./reviews/${slug}.md`, window.location.href);
-    const requestUrl = new URL(markdownUrl);
-    requestUrl.searchParams.set("v", cacheKey);
-
-    const requestController = new AbortController();
-    const requestTimeout = window.setTimeout(() => requestController.abort(), 12000);
-    let markdown;
-    try {
-      const response = await fetch(requestUrl, {
-        cache: "no-store",
-        signal: requestController.signal,
-      });
-
-      if (response.status === 404) {
-        showState("아직 장문 리뷰 파일을 작성하지 않았습니다.");
-        return;
-      }
-      if (!response.ok) {
-        showState("리뷰 파일을 불러오는 중 문제가 발생했습니다.", { retry: true });
-        return;
-      }
-
-      markdown = await response.text();
-    } catch (error) {
-      console.error("리뷰 파일을 불러오지 못했습니다.", error);
-      const message = error?.name === "AbortError"
-        ? "리뷰 파일을 불러오는 데 시간이 너무 오래 걸렸습니다."
-        : "리뷰 파일을 불러오지 못했습니다.";
-      showState(message, { retry: true });
-      return;
-    } finally {
-      window.clearTimeout(requestTimeout);
-    }
-
+    const markdownUrl = new URL(`./papers/${slug}.md`, window.location.href);
+    const markdown = typeof paper.markdown === "string" ? paper.markdown : "";
     const renderableMarkdown = markdown.replace(/^\s*<!--[\s\S]*?-->\s*/, "").trim();
     if (!renderableMarkdown) {
       showState("아직 리뷰 본문을 작성하지 않았습니다.");

@@ -1,15 +1,23 @@
-const moduleCacheKey = Date.now();
+const moduleCacheKey = "20260810-2";
 let loadedPapers = [];
 let paperLoadFailures = [];
+let paperLoadFailureDetails = [];
 
 try {
-  const { loadPapers } = await import(`./papers/index.js?v=${moduleCacheKey}`);
+  const { loadPapers } = await import(`./paper-data.js?v=${moduleCacheKey}`);
   const loadResult = await loadPapers(moduleCacheKey);
-  loadedPapers = loadResult.papers;
-  paperLoadFailures = loadResult.failures;
+  loadedPapers = Array.isArray(loadResult.papers) ? loadResult.papers : [];
+  paperLoadFailures = Array.isArray(loadResult.failures) ? loadResult.failures : [];
+  paperLoadFailureDetails = Array.isArray(loadResult.failureDetails)
+    ? loadResult.failureDetails
+    : [];
 } catch (error) {
   console.error("논문 파일 목록을 불러오지 못했습니다.", error);
-  paperLoadFailures = ["./papers/index.js"];
+  paperLoadFailures = ["./papers/index.txt"];
+  paperLoadFailureDetails = [{
+    path: "./papers/index.txt",
+    message: error?.message || "논문 목록을 불러오지 못했습니다.",
+  }];
 }
 
 (() => {
@@ -47,6 +55,7 @@ try {
   }
 
   const source = Array.isArray(loadedPapers) ? loadedPapers : [];
+  const libraryLoadFailed = source.length === 0 && paperLoadFailures.length > 0;
   const papers = source
     .filter((paper) => paper && typeof paper === "object" && toText(paper.title))
     .map((paper, index) => {
@@ -65,6 +74,7 @@ try {
         updated: /^\d{4}-\d{2}-\d{2}$/.test(updated) ? updated : "",
         tags: Array.isArray(paper.tags) ? paper.tags.map(toText).filter(Boolean) : [],
         review: toText(paper.review) || toText(paper.summary),
+        searchText: toText(paper.searchText),
         order: dateOrder(updated, index),
       };
     });
@@ -74,13 +84,21 @@ try {
 
   const loadWarning = document.querySelector("#paper-load-warning");
   if (loadWarning && paperLoadFailures.length > 0) {
-    loadWarning.textContent = `불러오지 못한 논문 파일 ${paperLoadFailures.length}개: ${paperLoadFailures.join(", ")}`;
+    const detailByPath = new Map(
+      paperLoadFailureDetails.map((detail) => [toText(detail?.path), toText(detail?.message)]),
+    );
+    const descriptions = paperLoadFailures.map((path) => {
+      const detail = detailByPath.get(path);
+      return detail ? `${path} — ${detail}` : path;
+    });
+    loadWarning.textContent = `확인이 필요한 논문 파일 ${paperLoadFailures.length}개: ${descriptions.join(" / ")}`;
     loadWarning.hidden = false;
   }
 
   function createPaperCard(paper) {
     const card = element("article", "paper-card");
     card.dataset.title = paper.title;
+    card.dataset.slug = paper.slug;
     card.dataset.topics = paper.topics.join(" ");
     card.dataset.status = paper.status;
     card.dataset.order = String(paper.order);
@@ -160,7 +178,12 @@ try {
     });
 
     const archiveNotice = document.querySelector("#archive-notice");
-    if (archiveNotice) archiveNotice.hidden = papers.length > 0;
+    if (archiveNotice) {
+      archiveNotice.textContent = libraryLoadFailed
+        ? "논문 Markdown을 불러오지 못했습니다. 아래 파일 안내를 확인해 주세요."
+        : "첫 논문을 추가하면 이곳에서 아카이브 현황을 확인할 수 있습니다.";
+      archiveNotice.hidden = papers.length > 0;
+    }
 
     document.querySelectorAll("[data-topic-count]").forEach((node) => {
       const total = papers.filter((paper) => paper.topics.includes(node.dataset.topicCount)).length;
@@ -212,10 +235,23 @@ try {
   };
 
   const normalize = (value) => value.toLocaleLowerCase("ko-KR").trim();
+  const paperSearchIndex = new Map(
+    papers.map((paper) => [
+      paper.slug,
+      normalize([
+        paper.title,
+        paper.citation,
+        paper.review,
+        paper.topics.join(" "),
+        paper.tags.join(" "),
+        paper.searchText,
+      ].join(" ")),
+    ]),
+  );
   const searchableText = new Map(
     cards.map((card) => [
       card,
-      normalize(card.dataset.search || ""),
+      paperSearchIndex.get(card.dataset.slug) || normalize(card.dataset.search || ""),
     ]),
   );
 
@@ -274,10 +310,17 @@ try {
     });
 
     if (libraryIsEmpty) {
-      resultCount.textContent = "등록된 논문 노트가 없습니다.";
-      emptyCode.textContent = "LIBRARY / EMPTY";
-      emptyTitle.textContent = "아직 등록된 논문이 없습니다.";
-      emptyDescription.textContent = "첫 논문을 추가하면 카드와 검색·필터가 표시됩니다.";
+      if (libraryLoadFailed) {
+        resultCount.textContent = "논문 Markdown을 불러오지 못했습니다.";
+        emptyCode.textContent = "LIBRARY / LOAD ERROR";
+        emptyTitle.textContent = "논문 파일을 확인해 주세요.";
+        emptyDescription.textContent = "위 안내에 표시된 파일을 수정한 뒤 페이지를 새로고침해 주세요.";
+      } else {
+        resultCount.textContent = "등록된 논문 노트가 없습니다.";
+        emptyCode.textContent = "LIBRARY / EMPTY";
+        emptyTitle.textContent = "아직 등록된 논문이 없습니다.";
+        emptyDescription.textContent = "첫 논문을 추가하면 카드와 검색·필터가 표시됩니다.";
+      }
       emptyState.hidden = false;
       resetButton.hidden = true;
     } else {
