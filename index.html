@@ -18,8 +18,9 @@
 
   <title>JH / PAPER LOG — Research Index</title>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-  <link rel="stylesheet" href="style.css?v=20260810-1">
-  <script src="script.js?v=20260810-1" defer></script>
+  <link rel="stylesheet" href="style.css?v=20260810-2">
+  <script src="papers.js?v=20260810-1" defer></script>
+  <script src="script.js?v=20260810-2" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#library">논문 목록으로 바로가기</a>
@@ -71,22 +72,22 @@
           <dl class="archive-stats">
             <div>
               <dt>Notes</dt>
-              <dd>00</dd>
+              <dd id="stat-notes">00</dd>
             </div>
             <div>
               <dt>Topics</dt>
-              <dd>04</dd>
+              <dd id="stat-topics">00</dd>
             </div>
             <div>
               <dt>Reading</dt>
-              <dd>00</dd>
+              <dd id="stat-reading">00</dd>
             </div>
             <div>
               <dt>Updated</dt>
-              <dd>—</dd>
+              <dd id="stat-updated">—</dd>
             </div>
           </dl>
-          <p class="archive-notice">첫 논문을 추가하면 이곳에서 아카이브 현황을 확인할 수 있습니다.</p>
+          <p class="archive-notice" id="archive-notice">첫 논문을 추가하면 이곳에서 아카이브 현황을 확인할 수 있습니다.</p>
         </aside>
       </div>
     </section>
@@ -95,7 +96,7 @@
       <div class="container">
         <div class="section-heading">
           <div>
-            <p class="section-code">LIBRARY / 00</p>
+            <p class="section-code" id="library-code">LIBRARY / 00</p>
             <h2 id="library-title">Paper Library</h2>
           </div>
           <p>서지 목록보다, 나중에 다시 쓸 수 있는 생각을 남깁니다.</p>
@@ -178,22 +179,22 @@
 
         <div class="topic-grid">
           <button class="topic-card" type="button" data-topic-jump="holographic">
-            <span class="topic-count">00 NOTES</span>
+            <span class="topic-count" data-topic-count="holographic">00 NOTES</span>
             <span class="topic-name">Holographic<br>Antennas</span>
             <span class="topic-arrow" aria-hidden="true">↘</span>
           </button>
           <button class="topic-card" type="button" data-topic-jump="metasurfaces">
-            <span class="topic-count">00 NOTES</span>
+            <span class="topic-count" data-topic-count="metasurfaces">00 NOTES</span>
             <span class="topic-name">Tunable<br>Metasurfaces</span>
             <span class="topic-arrow" aria-hidden="true">↘</span>
           </button>
           <button class="topic-card" type="button" data-topic-jump="inverse-design">
-            <span class="topic-count">00 NOTES</span>
+            <span class="topic-count" data-topic-count="inverse-design">00 NOTES</span>
             <span class="topic-name">Inverse<br>Design</span>
             <span class="topic-arrow" aria-hidden="true">↘</span>
           </button>
           <button class="topic-card" type="button" data-topic-jump="ai-em">
-            <span class="topic-count">00 NOTES</span>
+            <span class="topic-count" data-topic-count="ai-em">00 NOTES</span>
             <span class="topic-name">AI ×<br>Electromagnetics</span>
             <span class="topic-arrow" aria-hidden="true">↘</span>
           </button>
@@ -230,11 +231,11 @@
 
         <aside class="queue-card queue-card--empty" id="queue" aria-labelledby="queue-title">
           <div class="queue-head">
-            <p>CURRENT FOCUS</p>
-            <span>EMPTY</span>
+            <p id="queue-label">CURRENT FOCUS</p>
+            <span id="queue-progress">EMPTY</span>
           </div>
           <h3 id="queue-title">읽는 중인 논문이 없습니다.</h3>
-          <p>논문의 상태를 ‘읽는 중’으로 설정하면 현재 집중 항목으로 표시됩니다.</p>
+          <p id="queue-description">논문의 상태를 ‘읽는 중’으로 설정하면 현재 집중 항목으로 표시됩니다.</p>
         </aside>
       </div>
     </section>

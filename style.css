@@ -611,6 +611,22 @@ a {
   line-height: 1.05;
 }
 
+.paper-card h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.paper-card h3 a::after {
+  content: " ↗";
+  color: var(--accent);
+  font-size: 0.52em;
+  vertical-align: top;
+}
+
+.paper-card h3 a:hover {
+  color: var(--accent);
+}
+
 .paper-card--wide h3 {
   font-size: clamp(2rem, 3vw, 2.9rem);
 }
