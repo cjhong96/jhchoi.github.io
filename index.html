@@ -18,9 +18,9 @@
 
   <title>JH / PAPER LOG — Research Index</title>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-  <link rel="stylesheet" href="style.css?v=20260810-3">
-  <script src="papers.js?v=20260810-1" defer></script>
-  <script src="script.js?v=20260810-2" defer></script>
+  <link rel="stylesheet" href="style.css?v=20260810-4">
+  <script src="papers.js?v=20260810-2" defer></script>
+  <script src="script.js?v=20260810-3" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#library">논문 목록으로 바로가기</a>
@@ -35,7 +35,6 @@
       <nav class="primary-nav" aria-label="주요 메뉴">
         <a href="#library">Library</a>
         <a href="#topics">Topics</a>
-        <a href="#queue">Queue</a>
       </nav>
 
       <p class="header-index" aria-label="리서치 인덱스 1호">INDEX—001</p>
@@ -108,7 +107,7 @@
                 name="query"
                 type="search"
                 autocomplete="off"
-                placeholder="제목, 질문, 태그로 검색"
+                placeholder="제목, 요약, 태그로 검색"
               >
               <button class="clear-search" id="clear-search" type="button" hidden>지우기</button>
             </div>
@@ -198,43 +197,6 @@
       </div>
     </section>
 
-    <section class="note-system section" aria-labelledby="system-title">
-      <div class="container system-grid">
-        <div>
-          <p class="section-code">NOTE SYSTEM / Q—M—F—N</p>
-          <h2 id="system-title">한 편을 네 칸으로<br>남기는 방식.</h2>
-          <p class="system-intro">논문을 요약하는 데서 멈추지 않고, 다음 연구 행동으로 이어지도록 같은 구조를 반복합니다.</p>
-        </div>
-
-        <ol class="note-steps">
-          <li>
-            <span>Q</span>
-            <div><strong>Question</strong><p>이 논문이 답하려는 질문과 내가 읽는 이유.</p></div>
-          </li>
-          <li>
-            <span>M</span>
-            <div><strong>Method</strong><p>설계 변수, 물리 제약, 검증 방법의 연결.</p></div>
-          </li>
-          <li>
-            <span>F</span>
-            <div><strong>Finding</strong><p>결과보다 오래 남길 핵심 아이디어 한 문장.</p></div>
-          </li>
-          <li>
-            <span>N</span>
-            <div><strong>Next</strong><p>한계, 반론, 재현할 것, 함께 읽을 다음 논문.</p></div>
-          </li>
-        </ol>
-
-        <aside class="queue-card queue-card--empty" id="queue" aria-labelledby="queue-title">
-          <div class="queue-head">
-            <p id="queue-label">CURRENT FOCUS</p>
-            <span id="queue-progress">EMPTY</span>
-          </div>
-          <h3 id="queue-title">읽는 중인 논문이 없습니다.</h3>
-          <p id="queue-description">논문의 상태를 ‘읽는 중’으로 설정하면 현재 집중 항목으로 표시됩니다.</p>
-        </aside>
-      </div>
-    </section>
   </main>
 
   <footer class="site-footer">

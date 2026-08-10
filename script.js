@@ -10,12 +10,6 @@
     reading: "읽는 중",
     queue: "대기",
   };
-  const noteFields = [
-    { key: "question", code: "Q", label: "Question", step: "질문 정리" },
-    { key: "method", code: "M", label: "Method", step: "방법 구조화" },
-    { key: "finding", code: "F", label: "Finding", step: "핵심 발견" },
-    { key: "next", code: "N", label: "Next", step: "다음 연결" },
-  ];
 
   const toText = (value) => String(value ?? "").trim();
   const countText = (value) => String(value).padStart(2, "0");
@@ -31,7 +25,7 @@
     return match ? `${match[1]}.${match[2]}` : "—";
   }
 
-  function safeUrl(value) {
+  function safeUrl(value, { allowRelative = false } = {}) {
     if (!value) return "";
 
     const cleaned = value.replace(/^doi:\s*/i, "").trim();
@@ -40,10 +34,13 @@
     }
 
     const candidate = /^doi\.org\//i.test(cleaned) ? `https://${cleaned}` : cleaned;
-    if (!/^https?:\/\//i.test(candidate)) return "";
 
     try {
-      const url = new URL(candidate);
+      const hasWebProtocol = /^https?:\/\//i.test(candidate);
+      if (!hasWebProtocol && !allowRelative) return "";
+      if (!hasWebProtocol && /^[a-z][a-z\d+.-]*:/i.test(candidate)) return "";
+
+      const url = new URL(candidate, window.location.href);
       return url.protocol === "http:" || url.protocol === "https:" ? url.href : "";
     } catch {
       return "";
@@ -61,7 +58,6 @@
   const papers = source
     .filter((paper) => paper && typeof paper === "object" && toText(paper.title))
     .map((paper, index) => {
-      const rawNotes = paper.notes && typeof paper.notes === "object" ? paper.notes : {};
       const topics = Array.isArray(paper.topics)
         ? [...new Set(paper.topics.map(toText).filter((topic) => allowedTopics.has(topic)))]
         : [];
@@ -72,13 +68,12 @@
         title: toText(paper.title),
         citation: toText(paper.citation),
         url: safeUrl(toText(paper.url)),
+        noteUrl: safeUrl(toText(paper.noteUrl), { allowRelative: true }),
         status: Object.hasOwn(statusLabels, paper.status) ? paper.status : "queue",
         topics,
         updated: /^\d{4}-\d{2}-\d{2}$/.test(updated) ? updated : "",
         tags: Array.isArray(paper.tags) ? paper.tags.map(toText).filter(Boolean) : [],
-        notes: Object.fromEntries(
-          noteFields.map(({ key }) => [key, toText(rawNotes[key])]),
-        ),
+        summary: toText(paper.summary),
         order: dateOrder(updated, index),
       };
     });
@@ -100,67 +95,36 @@
     );
     card.append(meta);
 
-    const title = element("h3");
-    if (paper.url) {
-      const link = element("a", "", paper.title);
-      link.href = paper.url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.setAttribute("aria-label", `원문 보기 — ${paper.title}`);
-      title.append(link);
-    } else {
-      title.textContent = paper.title;
-    }
-    card.append(title);
+    card.append(element("h3", "", paper.title));
 
     if (paper.citation) {
       card.append(element("p", "citation", paper.citation));
     }
 
-    if (paper.notes.question) {
-      const question = element("div", "paper-question");
-      question.append(
-        element("span", "", "Question"),
-        element("p", "", paper.notes.question),
-      );
-      card.append(question);
+    if (paper.summary) {
+      card.append(element("p", "paper-summary", paper.summary));
     }
 
-    if (paper.notes.finding) {
-      const takeaway = element("p", "takeaway");
-      takeaway.append(
-        element("span", "", "Finding"),
-        document.createTextNode(paper.notes.finding),
-      );
-      card.append(takeaway);
-    }
+    if (paper.noteUrl || paper.url) {
+      const actions = element("div", "paper-actions");
 
-    if (noteFields.some(({ key }) => paper.notes[key])) {
-      const details = element("details", "note-details");
-      const summary = element("summary");
-      summary.append(
-        element("span", "", "정리 노트 펼치기"),
-        element("b", "", "＋"),
-      );
-      summary.querySelector("b").setAttribute("aria-hidden", "true");
+      if (paper.noteUrl) {
+        const noteLink = element("a", "", "노트 보기 ↗");
+        noteLink.href = paper.noteUrl;
+        noteLink.setAttribute("aria-label", `내 노트 보기 — ${paper.title}`);
+        actions.append(noteLink);
+      }
 
-      const body = element("div", "note-body");
-      noteFields.forEach(({ key, label }) => {
-        const section = element("section");
-        section.append(
-          element("h4", "", label),
-          element("p", "", paper.notes[key] || "아직 작성하지 않음."),
-        );
-        body.append(section);
-      });
+      if (paper.url && paper.url !== paper.noteUrl) {
+        const sourceLink = element("a", "", "원문 보기 ↗");
+        sourceLink.href = paper.url;
+        sourceLink.target = "_blank";
+        sourceLink.rel = "noopener noreferrer";
+        sourceLink.setAttribute("aria-label", `원문 보기 — ${paper.title}`);
+        actions.append(sourceLink);
+      }
 
-      details.append(summary, body);
-      details.addEventListener("toggle", () => {
-        summary.querySelector("span").textContent = details.open
-          ? "정리 노트 접기"
-          : "정리 노트 펼치기";
-      });
-      card.append(details);
+      card.append(actions);
     }
 
     const footer = element("footer", "paper-footer");
@@ -213,47 +177,7 @@
     });
   }
 
-  function updateCurrentFocus() {
-    const queueCard = document.querySelector("#queue");
-    const queueLabel = document.querySelector("#queue-label");
-    const queueProgress = document.querySelector("#queue-progress");
-    const queueTitle = document.querySelector("#queue-title");
-    const queueDescription = document.querySelector("#queue-description");
-    if (!queueCard || !queueLabel || !queueProgress || !queueTitle || !queueDescription) return;
-
-    queueCard.querySelector("ol")?.remove();
-    const focus = papers
-      .filter((paper) => paper.status === "reading")
-      .sort((a, b) => b.order - a.order)[0];
-
-    if (!focus) {
-      queueCard.classList.add("queue-card--empty");
-      queueLabel.textContent = "CURRENT FOCUS";
-      queueProgress.textContent = "EMPTY";
-      queueTitle.textContent = "읽는 중인 논문이 없습니다.";
-      queueDescription.textContent = "논문의 상태를 ‘읽는 중’으로 설정하면 현재 집중 항목으로 표시됩니다.";
-      return;
-    }
-
-    const completed = noteFields.filter(({ key }) => focus.notes[key]).length;
-    queueCard.classList.remove("queue-card--empty");
-    queueLabel.textContent = "CURRENT FOCUS";
-    queueProgress.textContent = `${countText(completed)} / 04`;
-    queueTitle.textContent = focus.title;
-    queueDescription.textContent = focus.notes.question || focus.citation || "현재 읽고 있는 논문입니다.";
-
-    const progressList = element("ol");
-    noteFields.forEach(({ key, code, step }) => {
-      const item = element("li");
-      if (focus.notes[key]) item.classList.add("is-done");
-      item.append(element("span", "", code), document.createTextNode(step));
-      progressList.append(item);
-    });
-    queueCard.append(progressList);
-  }
-
   updateArchiveSummary();
-  updateCurrentFocus();
 
   const controls = document.querySelector("#paper-controls");
   const searchInput = document.querySelector("#paper-search");
