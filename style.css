@@ -297,29 +297,34 @@ a {
 
 .section-heading {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.5fr);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 390px);
   align-items: end;
-  gap: 42px;
-  margin-bottom: 38px;
-  padding-bottom: 24px;
+  gap: 52px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--border-strong);
+}
+
+.section-heading .section-code {
+  margin-bottom: 9px;
 }
 
 .section-heading h2 {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: clamp(2.45rem, 4.5vw, 4rem);
-  font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 1.04;
+  font-size: clamp(2.5rem, 3.7vw, 3.25rem);
+  font-weight: 560;
+  letter-spacing: -0.04em;
+  line-height: 1.06;
 }
 
 .section-heading > p {
-  max-width: 420px;
+  max-width: 390px;
   justify-self: end;
-  margin: 0;
+  margin: 0 0 3px;
   color: var(--muted);
-  font-size: 0.94rem;
+  font-size: 0.98rem;
+  line-height: 1.65;
 }
 
 .library {
@@ -327,18 +332,18 @@ a {
 }
 
 .library-tools {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
 }
 
 .search-row {
   display: grid;
-  grid-template-columns: 170px 1fr;
+  grid-template-columns: 150px 1fr;
   align-items: center;
-  min-height: 72px;
+  min-height: 64px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -347,14 +352,14 @@ a {
 .sort-control > span {
   color: var(--muted);
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.045em;
   text-transform: uppercase;
 }
 
 .search-row > label {
-  padding-inline: 20px;
+  padding-inline: 18px;
 }
 
 .search-field {
@@ -362,8 +367,8 @@ a {
   height: 100%;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
+  gap: 9px;
+  padding: 7px 16px;
   border-left: 1px solid var(--border);
 }
 
@@ -371,19 +376,19 @@ a {
   flex: none;
   color: var(--muted);
   font-family: var(--font-serif);
-  font-size: 1.7rem;
+  font-size: 1.45rem;
   line-height: 1;
 }
 
 .search-field input {
   width: 100%;
   min-width: 0;
-  height: 48px;
+  height: 46px;
   padding: 0;
   background: transparent;
   border: 0;
   outline: 0;
-  font-size: 1rem;
+  font-size: 0.98rem;
 }
 
 .search-field input::placeholder {
@@ -409,7 +414,7 @@ a {
 .filter-group {
   min-width: 0;
   margin: 0;
-  padding: 17px 20px 19px;
+  padding: 14px 18px 16px;
   border: 0;
   border-bottom: 1px solid var(--border);
 }
@@ -418,7 +423,7 @@ a {
   float: none;
   width: auto;
   display: block;
-  margin-bottom: 11px;
+  margin-bottom: 9px;
   padding: 0;
 }
 
@@ -426,17 +431,17 @@ a {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 8px;
 }
 
 .filter-chip {
-  min-height: 40px;
-  padding: 7px 12px;
+  min-height: 38px;
+  padding: 7px 13px;
   color: var(--muted);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 999px;
-  font-size: 0.76rem;
+  font-size: 0.81rem;
   font-weight: 650;
 }
 
@@ -457,12 +462,12 @@ a {
 
 .library-tools :disabled {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: 0.76;
 }
 
 .tool-footer {
   display: grid;
-  grid-template-columns: 1fr 230px;
+  grid-template-columns: 1fr 245px;
 }
 
 .status-filter {
@@ -473,19 +478,19 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 7px;
-  padding: 13px 18px;
+  gap: 8px;
+  padding: 14px 18px;
   border-left: 1px solid var(--border);
 }
 
 .sort-control select {
   width: 100%;
-  min-height: 42px;
+  min-height: 40px;
   padding: 7px 32px 7px 10px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
 }
 
 .result-bar {
@@ -838,15 +843,16 @@ a {
 
   .section-heading {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 11px;
   }
 
   .section-heading > p {
     justify-self: start;
+    margin-bottom: 0;
   }
 
   .search-row {
-    grid-template-columns: 145px 1fr;
+    grid-template-columns: 138px 1fr;
   }
 
   .tool-footer {
@@ -927,7 +933,7 @@ a {
   }
 
   .section-heading h2 {
-    font-size: clamp(2.35rem, 12vw, 3.6rem);
+    font-size: clamp(2.2rem, 10vw, 3rem);
   }
 
   .search-row {
@@ -936,11 +942,11 @@ a {
 
   .search-row > label {
     display: block;
-    padding: 13px 14px 2px;
+    padding: 12px 14px 1px;
   }
 
   .search-field {
-    min-height: 60px;
+    min-height: 56px;
     border-left: 0;
   }
 
