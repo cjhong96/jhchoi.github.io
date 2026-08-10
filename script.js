@@ -170,7 +170,7 @@ try {
       "#stat-topics": countText(activeTopics.size),
       "#stat-reading": countText(readingCount),
       "#stat-updated": latest?.updated ? shortDate(latest.updated) : "—",
-      "#library-code": `LIBRARY / ${countText(papers.length)}`,
+      "#library-code": `REVIEWS / ${countText(papers.length)}`,
     };
     Object.entries(values).forEach(([selector, value]) => {
       const node = document.querySelector(selector);
@@ -181,13 +181,13 @@ try {
     if (archiveNotice) {
       archiveNotice.textContent = libraryLoadFailed
         ? "논문 Markdown을 불러오지 못했습니다. 아래 파일 안내를 확인해 주세요."
-        : "첫 논문을 추가하면 이곳에서 아카이브 현황을 확인할 수 있습니다.";
+        : "논문을 추가하면 아카이브 통계가 자동으로 갱신됩니다.";
       archiveNotice.hidden = papers.length > 0;
     }
 
     document.querySelectorAll("[data-topic-count]").forEach((node) => {
       const total = papers.filter((paper) => paper.topics.includes(node.dataset.topicCount)).length;
-      node.textContent = `${countText(total)} ${total === 1 ? "NOTE" : "NOTES"}`;
+      node.textContent = `${countText(total)} ${total === 1 ? "REVIEW" : "REVIEWS"}`;
     });
   }
 
@@ -312,21 +312,21 @@ try {
     if (libraryIsEmpty) {
       if (libraryLoadFailed) {
         resultCount.textContent = "논문 Markdown을 불러오지 못했습니다.";
-        emptyCode.textContent = "LIBRARY / LOAD ERROR";
+        emptyCode.textContent = "REVIEWS / LOAD ERROR";
         emptyTitle.textContent = "논문 파일을 확인해 주세요.";
         emptyDescription.textContent = "위 안내에 표시된 파일을 수정한 뒤 페이지를 새로고침해 주세요.";
       } else {
-        resultCount.textContent = "등록된 논문 노트가 없습니다.";
-        emptyCode.textContent = "LIBRARY / EMPTY";
+        resultCount.textContent = "등록된 논문 리뷰가 없습니다.";
+        emptyCode.textContent = "REVIEWS / EMPTY";
         emptyTitle.textContent = "아직 등록된 논문이 없습니다.";
         emptyDescription.textContent = "첫 논문을 추가하면 카드와 검색·필터가 표시됩니다.";
       }
       emptyState.hidden = false;
       resetButton.hidden = true;
     } else {
-      resultCount.textContent = `논문 노트 ${visibleCount} / ${cards.length}개 표시 중`;
+      resultCount.textContent = `논문 리뷰 ${visibleCount} / ${cards.length}개 표시 중`;
       emptyCode.textContent = "NO MATCH / 000";
-      emptyTitle.textContent = "맞는 노트가 없습니다.";
+      emptyTitle.textContent = "조건에 맞는 리뷰가 없습니다.";
       emptyDescription.textContent = "검색어를 줄이거나 필터를 초기화해 보세요.";
       emptyState.hidden = visibleCount !== 0;
       resetButton.hidden = visibleCount !== 0;
