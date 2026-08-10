@@ -8,8 +8,12 @@
   const topicButtons = controls ? Array.from(controls.querySelectorAll("[data-topic]")) : [];
   const statusButtons = controls ? Array.from(controls.querySelectorAll("[data-status]")) : [];
   const topicJumpButtons = Array.from(document.querySelectorAll("[data-topic-jump]"));
+  const resultBar = document.querySelector("#result-bar");
   const resultCount = document.querySelector("#result-count");
   const emptyState = document.querySelector("#empty-state");
+  const emptyCode = document.querySelector("#empty-code");
+  const emptyTitle = document.querySelector("#empty-title");
+  const emptyDescription = document.querySelector("#empty-description");
   const resetButton = document.querySelector("#reset-filters");
 
   if (
@@ -18,10 +22,15 @@
     !clearSearchButton ||
     !sortSelect ||
     !paperList ||
+    !resultBar ||
     !resultCount ||
     !emptyState ||
+    !emptyCode ||
+    !emptyTitle ||
+    !emptyDescription ||
     !resetButton ||
-    cards.length === 0
+    topicButtons.length === 0 ||
+    statusButtons.length === 0
   ) {
     return;
   }
@@ -87,8 +96,33 @@
     });
 
     const visibleCount = visibleCards.length;
-    resultCount.textContent = `샘플 노트 ${visibleCount} / ${cards.length}개 표시 중`;
-    emptyState.hidden = visibleCount !== 0;
+    const libraryIsEmpty = cards.length === 0;
+
+    resultBar.hidden = libraryIsEmpty;
+    controls.classList.toggle("is-disabled", libraryIsEmpty);
+    controls.querySelectorAll("input, button, select").forEach((control) => {
+      control.disabled = libraryIsEmpty;
+    });
+    topicJumpButtons.forEach((button) => {
+      button.disabled = libraryIsEmpty;
+    });
+
+    if (libraryIsEmpty) {
+      resultCount.textContent = "등록된 논문 노트가 없습니다.";
+      emptyCode.textContent = "LIBRARY / EMPTY";
+      emptyTitle.textContent = "아직 등록된 논문이 없습니다.";
+      emptyDescription.textContent = "첫 논문을 정리하면 이곳에 카드로 표시됩니다.";
+      emptyState.hidden = false;
+      resetButton.hidden = true;
+    } else {
+      resultCount.textContent = `논문 노트 ${visibleCount} / ${cards.length}개 표시 중`;
+      emptyCode.textContent = "NO MATCH / 000";
+      emptyTitle.textContent = "맞는 노트가 없습니다.";
+      emptyDescription.textContent = "검색어를 줄이거나 필터를 초기화해 보세요.";
+      emptyState.hidden = visibleCount !== 0;
+      resetButton.hidden = visibleCount !== 0;
+    }
+
     clearSearchButton.hidden = state.query.length === 0;
   }
 

@@ -300,20 +300,13 @@ a {
   font-weight: 650;
 }
 
-.sample-notice {
+.archive-notice {
   margin: 22px 0 0;
   padding: 12px 14px;
   color: var(--muted);
   background: var(--surface-soft);
   border-radius: 8px;
   font-size: 0.74rem;
-}
-
-.sample-notice strong {
-  margin-right: 5px;
-  color: var(--text);
-  font-family: var(--font-mono);
-  letter-spacing: 0.03em;
 }
 
 .section-heading {
@@ -471,6 +464,15 @@ a {
   color: #ffffff;
   background: var(--accent);
   border-color: var(--accent);
+}
+
+.library-tools.is-disabled {
+  background: #fafafa;
+}
+
+.library-tools :disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .tool-footer {
@@ -828,6 +830,16 @@ a {
   border-color: #aebce0;
 }
 
+.topic-card:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.topic-card:disabled:hover {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
 .topic-count {
   color: var(--muted);
   font-family: var(--font-mono);
@@ -976,6 +988,26 @@ a {
 .queue-card > ol .is-done {
   color: var(--text);
   text-decoration: line-through;
+}
+
+.queue-card--empty {
+  grid-template-columns: 1fr;
+}
+
+.queue-card--empty .queue-head,
+.queue-card--empty h3,
+.queue-card--empty > p {
+  grid-column: 1;
+}
+
+.queue-card--empty h3 {
+  max-width: 760px;
+}
+
+.queue-card--empty > p {
+  max-width: 650px;
+  margin: -8px 0 0;
+  align-self: auto;
 }
 
 .site-footer {
