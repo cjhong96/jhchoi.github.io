@@ -9,5 +9,5 @@ export default {
   topics: ["inverse-design"],
   updated: "",
   tags: [],
-  summary: "",
+  review: "",
 };

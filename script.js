@@ -57,13 +57,14 @@ try {
 
       return {
         number: index + 1,
+        slug: toText(paper.slug),
         title: toText(paper.title),
         citation: toText(paper.citation),
         status: Object.hasOwn(statusLabels, paper.status) ? paper.status : "queue",
         topics,
         updated: /^\d{4}-\d{2}-\d{2}$/.test(updated) ? updated : "",
         tags: Array.isArray(paper.tags) ? paper.tags.map(toText).filter(Boolean) : [],
-        summary: toText(paper.summary),
+        review: toText(paper.review) || toText(paper.summary),
         order: dateOrder(updated, index),
       };
     });
@@ -83,6 +84,13 @@ try {
     card.dataset.topics = paper.topics.join(" ");
     card.dataset.status = paper.status;
     card.dataset.order = String(paper.order);
+    card.dataset.search = [
+      paper.title,
+      paper.citation,
+      paper.review,
+      ...paper.topics,
+      ...paper.tags,
+    ].join(" ");
 
     const meta = element("header", "paper-meta");
     meta.append(
@@ -97,8 +105,8 @@ try {
       card.append(element("p", "citation", paper.citation));
     }
 
-    if (paper.summary) {
-      card.append(element("p", "paper-summary", paper.summary));
+    if (paper.review) {
+      card.append(element("p", "paper-review", paper.review));
     }
 
     const footer = element("footer", "paper-footer");
@@ -115,7 +123,16 @@ try {
       paper.updated ? `UPDATED ${shortDate(paper.updated)}` : "UPDATED —",
     );
     if (paper.updated) updated.dateTime = paper.updated;
-    footer.append(tagList, updated);
+
+    const footerMeta = element("div", "paper-footer-meta");
+    if (paper.slug) {
+      const reviewLink = element("a", "paper-review-link", "리뷰 읽기 ↗");
+      reviewLink.href = `./review.html?paper=${encodeURIComponent(paper.slug)}`;
+      reviewLink.setAttribute("aria-label", `리뷰 읽기 — ${paper.title}`);
+      footerMeta.append(reviewLink);
+    }
+    footerMeta.append(updated);
+    footer.append(tagList, footerMeta);
     card.append(footer);
 
     return card;
@@ -198,11 +215,7 @@ try {
   const searchableText = new Map(
     cards.map((card) => [
       card,
-      normalize([
-        card.dataset.title || "",
-        card.dataset.topics || "",
-        card.textContent || "",
-      ].join(" ")),
+      normalize(card.dataset.search || ""),
     ]),
   );
 

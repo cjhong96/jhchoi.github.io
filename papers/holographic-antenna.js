@@ -9,5 +9,5 @@ export default {
   topics: ["holographic"],
   updated: "",
   tags: [],
-  summary: "",
+  review: "",
 };

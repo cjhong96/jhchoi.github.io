@@ -11,5 +11,5 @@ export default {
   topics: [], // holographic | metasurfaces | inverse-design | ai-em
   updated: "", // 이 노트를 수정한 날짜, YYYY-MM-DD
   tags: [], // 예: ["beam synthesis", "surface wave"]
-  summary: "", // 카드에 표시할 짧은 한두 문장
+  review: "", // 카드에 표시할 리뷰 도입부. 장문은 reviews/같은-파일명.md에 작성
 };
