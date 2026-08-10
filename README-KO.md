@@ -31,9 +31,9 @@ papers/
 
 ```text
 이 논문을 Markdown 리뷰로 추가해줘.
-파일 이름: my-paper-title.md
+파일 이름: 논문 제목.md
 상태: 읽는 중
-태그: inverse-design, rfic
+태그: inverse-design / rfic
 PDF 또는 DOI: ...
 ```
 
@@ -41,19 +41,22 @@ PDF 또는 DOI: ...
 
 새 논문을 추가할 때는 다음 세 단계만 필요합니다.
 
-1. [template.md](papers/template.md)를 복사해 `papers/my-paper-title.md`처럼 저장합니다. 파일 이름은 영문 소문자·숫자·하이픈만 사용합니다.
+1. [template.md](papers/template.md)를 복사해 `papers/논문 제목.md`처럼 저장합니다. Obsidian의 노트 제목을 파일 이름으로 그대로 사용할 수 있지만 `< > : " / \ | ? *` 문자는 사용할 수 없습니다.
 2. 파일 위쪽에는 기본 정보를, 두 번째 `---` 아래에는 리뷰 본문을 Markdown으로 작성합니다.
-3. [index.txt](papers/index.txt) 끝에 확장자를 뺀 `my-paper-title`을 한 줄 추가합니다.
+3. [index.txt](papers/index.txt) 끝에 확장자 `.md`를 뺀 파일 이름을 대소문자와 띄어쓰기까지 똑같이 한 줄 추가합니다.
 
 예시는 다음과 같습니다.
 
 ```md
 ---
-title: Self Forcing: Bridging the Train-Test Gap
-citation: 저자 · 학술지 또는 학회 · 2025
+title: "Self Forcing: Bridging the Train-Test Gap"
+citation: "저자 · 학술지 또는 학회 · 2025"
 status: reading
 updated: 2026-08-10
-tags: inverse-design, millimeter-wave, surrogate-model
+tags:
+  - inverse-design
+  - millimeter-wave
+  - surrogate-model
 card:
 ---
 
@@ -74,10 +77,10 @@ card:
 - `citation`: `저자 · 학술지 또는 학회 · 출판연도` 순서의 서지 정보
 - `status`: `done`(정리 완료), `reading`(읽는 중), `queue`(대기)
 - `updated`: 이 리뷰를 마지막으로 수정한 날짜, `YYYY-MM-DD`
-- `tags`: 검색과 분류에 사용할 자유 태그. 여러 개는 쉼표로 구분합니다. 화면의 필터와 태그 색인은 이 값으로 자동 생성됩니다.
+- `tags`: 검색과 분류에 사용할 자유 태그. `tags:` 아래에 두 칸 들여쓰고 `- 태그` 형식으로 한 줄씩 적습니다. 화면의 필터와 태그 색인은 이 값으로 자동 생성됩니다.
 - `card`: 카드에 별도로 보여 줄 짧은 문장. 비워도 됩니다.
 
-태그는 `inverse-design`, `rfic`, `millimeter-wave`처럼 영문 소문자와 하이픈 위주로 적는 것을 권장합니다. 한 논문에 최대 20개, 태그 하나는 최대 50자까지 사용할 수 있으며 쉼표 자체는 태그에 넣을 수 없습니다. 대소문자만 다른 태그는 같은 태그로 묶입니다.
+태그는 `inverse-design`, `rfic`, `millimeter-wave`처럼 영문 소문자와 하이픈 위주로 적는 것을 권장합니다. 한 논문에 최대 20개, 태그 하나는 최대 50자까지 사용할 수 있습니다. 대소문자만 다른 태그는 같은 태그로 묶입니다. 기존의 `tags: inverse-design, rfic` 한 줄 형식도 계속 읽을 수 있지만 새 글은 Obsidian 목록형을 사용하세요.
 
 ## 리뷰 본문 작성
 
@@ -89,6 +92,8 @@ card:
 - 이미지 문법 예: `![설명](./my-paper-title/figure-01.webp)`
 - 본문이 비어 있어도 카드는 표시되며, 상세 페이지에는 작성 전 안내가 나옵니다.
 - `url`, `noteUrl` 또는 논문별 JS 파일은 필요하지 않습니다.
+
+`tags` 같은 위쪽 속성은 Obsidian 형식과 호환됩니다. 본문은 사이트에서도 보이게 일반 Markdown으로 작성하고, Obsidian 전용 `[[위키링크]]`, `![[임베드]]`, `%%주석%%`은 사용하지 않는 것을 권장합니다.
 
 저장하면 논문 카드, 전체 개수, 읽는 중 개수, 최근 날짜와 태그 색인이 자동으로 바뀝니다. 리뷰 형식은 사이트가 강제하지 않습니다.
 

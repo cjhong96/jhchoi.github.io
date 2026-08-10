@@ -1,4 +1,4 @@
-const moduleCacheKey = "20260810-3";
+const moduleCacheKey = "20260810-4";
 let loadedPapers = [];
 let paperLoadFailures = [];
 let paperLoadFailureDetails = [];

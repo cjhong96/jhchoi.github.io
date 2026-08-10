@@ -4,15 +4,17 @@ citation: ""
 status: queue
 updated:
 tags:
+  - inverse-design
+  - rfic
 card:
 ---
 
 <!--
-이 파일을 복사해 papers/my-paper-title.md처럼 저장하세요.
+이 파일을 복사해 papers/논문 제목.md처럼 저장하세요.
 
-위쪽 기본 정보에는 다음처럼 한 줄로 적습니다.
+위쪽 기본 정보는 다음 안내에 맞춰 적습니다.
 - status: queue(대기), reading(읽는 중), done(정리 완료) 중 하나
-- tags: inverse-design, rfic, millimeter-wave
+- tags: 각 태그를 들여쓴 `- 태그` 형식으로 한 줄씩 추가합니다.
 - card: 카드에 따로 보여 줄 짧은 문장. 비워 두면 아래 첫 문단을 자동 사용합니다.
 
 여기부터는 Markdown으로 자유롭게 작성하면 됩니다.

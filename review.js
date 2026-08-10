@@ -1,6 +1,5 @@
 (() => {
-  const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-  const cacheKey = "20260810-3";
+  const cacheKey = "20260810-4";
   const statusLabels = {
     done: "정리 완료",
     reading: "읽는 중",
@@ -180,7 +179,7 @@
 
   async function loadReview() {
     const slug = toText(new URLSearchParams(window.location.search).get("paper"));
-    if (!slugPattern.test(slug)) {
+    if (!slug || slug.length > 180) {
       showPageError("리뷰를 찾을 수 없습니다.", "올바른 논문 리뷰 주소가 아닙니다.");
       return;
     }
@@ -235,7 +234,11 @@
 
     renderMetadata(paper);
 
-    const markdownUrl = new URL(`./papers/${slug}.md`, window.location.href);
+    const markdownUrl = toText(paper.sourceUrl);
+    if (!markdownUrl) {
+      showPageError("리뷰를 표시할 수 없습니다.", "리뷰 파일 주소를 확인하지 못했습니다.");
+      return;
+    }
     const markdown = typeof paper.markdown === "string" ? paper.markdown : "";
     const renderableMarkdown = markdown.replace(/^\s*<!--[\s\S]*?-->\s*/, "").trim();
     if (!renderableMarkdown) {

@@ -1,4 +1,3 @@
-const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const allowedFrontMatterKeys = new Set([
   "title",
   "citation",
@@ -10,6 +9,7 @@ const allowedFrontMatterKeys = new Set([
 const allowedStatuses = new Set(["done", "reading", "queue"]);
 const maxTags = 20;
 const maxTagLength = 50;
+const maxPaperNameLength = 180;
 
 const manifestUrl = new URL("./papers/index.txt", import.meta.url);
 const manifestPath = "./papers/index.txt";
@@ -28,6 +28,38 @@ class PaperDataError extends Error {
 }
 
 const toText = (value) => String(value ?? "").trim();
+
+function paperNameKey(value) {
+  return toText(value).normalize("NFKC").toLocaleLowerCase("ko-KR");
+}
+
+function isValidPaperName(value) {
+  const text = toText(value);
+  if (!text || text.length > maxPaperNameLength) return false;
+
+  const normalized = text.normalize("NFKC");
+  if (byteLength(`${text}.md`) > 255 || byteLength(`${normalized}.md`) > 255) return false;
+  if (
+    normalized === "." ||
+    normalized === ".." ||
+    normalized.startsWith(".") ||
+    /[. ]$/.test(normalized) ||
+    /[<>:"/\\|?*\u0000-\u001F]/u.test(normalized)
+  ) {
+    return false;
+  }
+
+  const windowsStem = normalized.split(".")[0].toLocaleUpperCase("en-US");
+  return !/^(?:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/.test(windowsStem);
+}
+
+function paperPath(name) {
+  return `./papers/${name}.md`;
+}
+
+function paperUrl(name) {
+  return new URL(`./papers/${encodeURIComponent(name)}.md`, import.meta.url);
+}
 
 function byteLength(value) {
   return new TextEncoder().encode(value).byteLength;
@@ -87,10 +119,12 @@ function parseManifest(source) {
     let value = line.trim();
     if (!value || value.startsWith("#")) return;
     value = value.replace(/^[-*+]\s+/, "").replace(/\.md$/i, "").trim();
+    const key = paperNameKey(value);
+    const duplicate = seen.has(key);
 
-    if (!slugPattern.test(value) || seen.has(value)) {
+    if (!isValidPaperName(value) || duplicate) {
       const path = `${manifestPath}:${index + 1}`;
-      const message = seen.has(value)
+      const message = duplicate
         ? `목록에 같은 파일 이름이 중복되었습니다: ${value}`
         : `목록의 파일 이름을 확인해 주세요: ${value}`;
       failures.push(path);
@@ -98,7 +132,7 @@ function parseManifest(source) {
       return;
     }
 
-    seen.add(value);
+    seen.add(key);
     slugs.push(value);
   });
 
@@ -123,6 +157,10 @@ function unquote(value) {
 }
 
 function parseList(value) {
+  if (Array.isArray(value)) {
+    return value.map(unquote).map(toText).filter(Boolean);
+  }
+
   let text = value.trim();
   if (text.startsWith("[") && text.endsWith("]")) {
     text = text.slice(1, -1);
@@ -196,9 +234,27 @@ function parsePaperMarkdown(source, slug) {
 
   const metadata = {};
   const presentKeys = new Set();
+  let activeListKey = "";
   for (let index = 1; index < closingLine; index += 1) {
-    const line = lines[index].trim();
+    const rawLine = lines[index];
+    const line = rawLine.trim();
     if (!line || line.startsWith("#")) continue;
+
+    const listItem = /^\s*-\s*(.*)$/.exec(rawLine);
+    if (listItem) {
+      if (activeListKey !== "tags") {
+        throw new PaperDataError("parse", path, `기본 정보 ${index + 1}번째 줄의 목록을 확인해 주세요.`);
+      }
+
+      const value = listItem[1].trim();
+      if (!value) {
+        throw new PaperDataError("parse", path, `tags ${index + 1}번째 줄의 값을 입력해 주세요.`);
+      }
+      metadata.tags.push(value);
+      continue;
+    }
+
+    activeListKey = "";
 
     const separator = line.indexOf(":");
     if (separator <= 0) {
@@ -217,7 +273,13 @@ function parsePaperMarkdown(source, slug) {
     }
 
     presentKeys.add(key);
-    metadata[key] = line.slice(separator + 1).trim();
+    const value = line.slice(separator + 1).trim();
+    if (key === "tags" && value === "") {
+      metadata.tags = [];
+      activeListKey = "tags";
+    } else {
+      metadata[key] = value;
+    }
   }
 
   if (!presentKeys.has("title")) {
@@ -287,10 +349,13 @@ async function loadManifest() {
 }
 
 async function loadPaperFile(slug) {
-  const path = `./papers/${slug}.md`;
-  const url = new URL(`./papers/${slug}.md`, import.meta.url);
+  const path = paperPath(slug);
+  const url = paperUrl(slug);
   const source = await fetchText(url, path, maxPaperBytes);
-  return parsePaperMarkdown(source, slug);
+  return {
+    ...parsePaperMarkdown(source, slug),
+    sourceUrl: url.href,
+  };
 }
 
 async function mapWithLimit(values, task) {
@@ -340,7 +405,7 @@ export async function loadPapers(cacheKey = Date.now()) {
 
 export async function loadPaper(slug, cacheKey = Date.now()) {
   void cacheKey;
-  if (!slugPattern.test(slug)) {
+  if (!isValidPaperName(slug)) {
     return { registered: false, paper: null, failures: [], failureDetails: [] };
   }
 
