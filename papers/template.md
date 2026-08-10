@@ -11,6 +11,7 @@ card:
 이 파일을 복사해 papers/my-paper-title.md처럼 저장하세요.
 
 위쪽 기본 정보에는 다음처럼 한 줄로 적습니다.
+- status: queue(대기), reading(읽는 중), done(정리 완료) 중 하나
 - tags: inverse-design, rfic, millimeter-wave
 - card: 카드에 따로 보여 줄 짧은 문장. 비워 두면 아래 첫 문단을 자동 사용합니다.
 
