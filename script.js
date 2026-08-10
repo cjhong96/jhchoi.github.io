@@ -252,7 +252,7 @@ try {
     const visibleCount = visibleCards.length;
     const libraryIsEmpty = cards.length === 0;
     resultBar.hidden = libraryIsEmpty;
-    controls.classList.toggle("is-disabled", libraryIsEmpty);
+    controls.hidden = libraryIsEmpty;
     controls.querySelectorAll("input, button, select").forEach((control) => {
       control.disabled = libraryIsEmpty;
     });
@@ -264,7 +264,7 @@ try {
       resultCount.textContent = "등록된 논문 노트가 없습니다.";
       emptyCode.textContent = "LIBRARY / EMPTY";
       emptyTitle.textContent = "아직 등록된 논문이 없습니다.";
-      emptyDescription.textContent = "첫 논문을 정리하면 이곳에 카드로 표시됩니다.";
+      emptyDescription.textContent = "첫 논문을 추가하면 카드와 검색·필터가 표시됩니다.";
       emptyState.hidden = false;
       resetButton.hidden = true;
     } else {

@@ -18,8 +18,8 @@
 
   <title>JH / PAPER LOG — Research Index</title>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-  <link rel="stylesheet" href="style.css?v=20260810-7">
-  <script type="module" src="script.js?v=20260810-5"></script>
+  <link rel="stylesheet" href="style.css?v=20260810-8">
+  <script type="module" src="script.js?v=20260810-6"></script>
 </head>
 <body>
   <a class="skip-link" href="#library">논문 목록으로 바로가기</a>
@@ -96,7 +96,7 @@
           <p>서지 목록보다, 나중에 다시 쓸 수 있는 생각을 남깁니다.</p>
         </div>
 
-        <form class="library-tools" id="paper-controls" role="search">
+        <form class="library-tools" id="paper-controls" role="search" hidden>
           <div class="search-row">
             <label for="paper-search">논문 노트 검색</label>
             <div class="search-field">
@@ -157,7 +157,7 @@
         <div class="empty-state" id="empty-state">
           <p class="empty-code" id="empty-code">LIBRARY / EMPTY</p>
           <h3 id="empty-title">아직 등록된 논문이 없습니다.</h3>
-          <p id="empty-description">첫 논문을 정리하면 이곳에 카드로 표시됩니다.</p>
+          <p id="empty-description">첫 논문을 추가하면 카드와 검색·필터가 표시됩니다.</p>
           <button type="button" id="reset-filters" hidden>모든 필터 초기화</button>
         </div>
       </div>
@@ -174,22 +174,22 @@
         </div>
 
         <div class="topic-grid">
-          <button class="topic-card" type="button" data-topic-jump="holographic">
+          <button class="topic-card" type="button" data-topic-jump="holographic" disabled>
             <span class="topic-count" data-topic-count="holographic">00 NOTES</span>
             <span class="topic-name">Holographic<br>Antennas</span>
             <span class="topic-arrow" aria-hidden="true">↘</span>
           </button>
-          <button class="topic-card" type="button" data-topic-jump="metasurfaces">
+          <button class="topic-card" type="button" data-topic-jump="metasurfaces" disabled>
             <span class="topic-count" data-topic-count="metasurfaces">00 NOTES</span>
             <span class="topic-name">Tunable<br>Metasurfaces</span>
             <span class="topic-arrow" aria-hidden="true">↘</span>
           </button>
-          <button class="topic-card" type="button" data-topic-jump="inverse-design">
+          <button class="topic-card" type="button" data-topic-jump="inverse-design" disabled>
             <span class="topic-count" data-topic-count="inverse-design">00 NOTES</span>
             <span class="topic-name">Inverse<br>Design</span>
             <span class="topic-arrow" aria-hidden="true">↘</span>
           </button>
-          <button class="topic-card" type="button" data-topic-jump="ai-em">
+          <button class="topic-card" type="button" data-topic-jump="ai-em" disabled>
             <span class="topic-count" data-topic-count="ai-em">00 NOTES</span>
             <span class="topic-name">AI ×<br>Electromagnetics</span>
             <span class="topic-arrow" aria-hidden="true">↘</span>
