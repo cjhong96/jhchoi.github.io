@@ -2,7 +2,6 @@
 title: ""
 citation: ""
 status: queue
-topics:
 updated:
 tags:
 card:
@@ -12,8 +11,7 @@ card:
 이 파일을 복사해 papers/my-paper-title.md처럼 저장하세요.
 
 위쪽 기본 정보에는 다음처럼 한 줄로 적습니다.
-- topics: holographic, inverse-design
-- tags: beam synthesis, surface wave
+- tags: inverse-design, rfic, millimeter-wave
 - card: 카드에 따로 보여 줄 짧은 문장. 비워 두면 아래 첫 문단을 자동 사용합니다.
 
 여기부터는 Markdown으로 자유롭게 작성하면 됩니다.

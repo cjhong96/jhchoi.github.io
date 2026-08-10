@@ -1,4 +1,4 @@
-const moduleCacheKey = "20260810-2";
+const moduleCacheKey = "20260810-3";
 let loadedPapers = [];
 let paperLoadFailures = [];
 let paperLoadFailureDetails = [];
@@ -21,12 +21,6 @@ try {
 }
 
 (() => {
-  const allowedTopics = new Set([
-    "holographic",
-    "metasurfaces",
-    "inverse-design",
-    "ai-em",
-  ]);
   const statusLabels = {
     done: "정리 완료",
     reading: "읽는 중",
@@ -35,6 +29,28 @@ try {
 
   const toText = (value) => String(value ?? "").trim();
   const countText = (value) => String(value).padStart(2, "0");
+  const normalize = (value) => toText(value).normalize("NFKC").toLocaleLowerCase("ko-KR");
+
+  function cleanTags(values) {
+    const tags = [];
+    const tagKeys = [];
+    const seen = new Set();
+
+    (Array.isArray(values) ? values : []).forEach((value) => {
+      const label = toText(value)
+        .normalize("NFKC")
+        .replace(/^(?:#\s*)+/, "")
+        .trim()
+        .replace(/\s+/g, " ");
+      const key = normalize(label);
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      tags.push(label);
+      tagKeys.push(key);
+    });
+
+    return { tags, tagKeys };
+  }
 
   function dateOrder(value, fallback) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return fallback;
@@ -59,10 +75,8 @@ try {
   const papers = source
     .filter((paper) => paper && typeof paper === "object" && toText(paper.title))
     .map((paper, index) => {
-      const topics = Array.isArray(paper.topics)
-        ? [...new Set(paper.topics.map(toText).filter((topic) => allowedTopics.has(topic)))]
-        : [];
       const updated = toText(paper.updated);
+      const { tags, tagKeys } = cleanTags(paper.tags);
 
       return {
         number: index + 1,
@@ -70,9 +84,9 @@ try {
         title: toText(paper.title),
         citation: toText(paper.citation),
         status: Object.hasOwn(statusLabels, paper.status) ? paper.status : "queue",
-        topics,
         updated: /^\d{4}-\d{2}-\d{2}$/.test(updated) ? updated : "",
-        tags: Array.isArray(paper.tags) ? paper.tags.map(toText).filter(Boolean) : [],
+        tags,
+        tagKeys,
         review: toText(paper.review) || toText(paper.summary),
         searchText: toText(paper.searchText),
         order: dateOrder(updated, index),
@@ -99,15 +113,14 @@ try {
     const card = element("article", "paper-card");
     card.dataset.title = paper.title;
     card.dataset.slug = paper.slug;
-    card.dataset.topics = paper.topics.join(" ");
     card.dataset.status = paper.status;
     card.dataset.order = String(paper.order);
     card.dataset.search = [
       paper.title,
       paper.citation,
       paper.review,
-      ...paper.topics,
       ...paper.tags,
+      ...paper.tags.map((tag) => `#${tag}`),
     ].join(" ");
 
     const meta = element("header", "paper-meta");
@@ -130,10 +143,10 @@ try {
     const footer = element("footer", "paper-footer");
     const tagList = element("div", "tag-list");
     tagList.setAttribute("aria-label", "태그");
-    const tags = paper.tags.length ? paper.tags : paper.topics;
-    tags.forEach((tag) => {
+    paper.tags.forEach((tag) => {
       tagList.append(element("span", "", `#${tag.replace(/^#/, "")}`));
     });
+    tagList.hidden = paper.tags.length === 0;
 
     const updated = element(
       "time",
@@ -160,14 +173,64 @@ try {
   papers.forEach((paper) => cardFragment.append(createPaperCard(paper)));
   paperList.replaceChildren(cardFragment);
 
+  const tagCatalogMap = new Map();
+  papers.forEach((paper) => {
+    paper.tags.forEach((label, index) => {
+      const key = paper.tagKeys[index];
+      const entry = tagCatalogMap.get(key) || { key, label, count: 0 };
+      entry.count += 1;
+      tagCatalogMap.set(key, entry);
+    });
+  });
+  const tagCatalog = [...tagCatalogMap.values()].sort((a, b) => (
+    b.count - a.count || a.label.localeCompare(b.label, "ko", { sensitivity: "base" })
+  ));
+
+  const tagFilterRow = document.querySelector("#tag-filter-row");
+  const tagFilterGroup = document.querySelector("#tag-filter-group");
+  const tagDirectory = document.querySelector("#tag-directory");
+  const tagDirectoryEmpty = document.querySelector("#tag-directory-empty");
+  const tagIndexCode = document.querySelector("#tag-index-code");
+  if (!tagFilterRow || !tagFilterGroup || !tagDirectory || !tagDirectoryEmpty || !tagIndexCode) return;
+
+  const filterTagFragment = document.createDocumentFragment();
+  const directoryTagFragment = document.createDocumentFragment();
+  tagCatalog.forEach((entry) => {
+    const filterButton = element("button", "filter-chip", `#${entry.label}`);
+    filterButton.type = "button";
+    filterButton.dataset.tag = entry.key;
+    filterButton.setAttribute("aria-pressed", "false");
+    filterButton.setAttribute("aria-label", `#${entry.label} 태그, 논문 리뷰 ${entry.count}개`);
+    filterTagFragment.append(filterButton);
+
+    const directoryButton = element("button", "tag-directory-item");
+    directoryButton.type = "button";
+    directoryButton.dataset.tagJump = entry.key;
+    directoryButton.setAttribute("aria-pressed", "false");
+    directoryButton.setAttribute(
+      "aria-label",
+      `#${entry.label} 태그, 논문 리뷰 ${entry.count}개`,
+    );
+    directoryButton.append(
+      element("span", "tag-directory-name", `#${entry.label}`),
+      element("span", "tag-directory-count", `${countText(entry.count)} REVIEWS`),
+    );
+    directoryTagFragment.append(directoryButton);
+  });
+  tagFilterRow.append(filterTagFragment);
+  tagFilterGroup.hidden = tagCatalog.length === 0;
+  tagDirectory.replaceChildren(directoryTagFragment);
+  tagDirectory.hidden = tagCatalog.length === 0;
+  tagDirectoryEmpty.hidden = tagCatalog.length > 0;
+  tagIndexCode.textContent = `TAG INDEX / ${countText(tagCatalog.length)}`;
+
   function updateArchiveSummary() {
-    const activeTopics = new Set(papers.flatMap((paper) => paper.topics));
     const readingCount = papers.filter((paper) => paper.status === "reading").length;
     const latest = papers.slice().sort((a, b) => b.order - a.order)[0];
 
     const values = {
       "#stat-notes": countText(papers.length),
-      "#stat-topics": countText(activeTopics.size),
+      "#stat-tags": countText(tagCatalog.length),
       "#stat-reading": countText(readingCount),
       "#stat-updated": latest?.updated ? shortDate(latest.updated) : "—",
       "#library-code": `REVIEWS / ${countText(papers.length)}`,
@@ -185,10 +248,6 @@ try {
       archiveNotice.hidden = papers.length > 0;
     }
 
-    document.querySelectorAll("[data-topic-count]").forEach((node) => {
-      const total = papers.filter((paper) => paper.topics.includes(node.dataset.topicCount)).length;
-      node.textContent = `${countText(total)} ${total === 1 ? "REVIEW" : "REVIEWS"}`;
-    });
   }
 
   updateArchiveSummary();
@@ -198,9 +257,9 @@ try {
   const clearSearchButton = document.querySelector("#clear-search");
   const sortSelect = document.querySelector("#paper-sort");
   const cards = Array.from(paperList.querySelectorAll(".paper-card"));
-  const topicButtons = controls ? Array.from(controls.querySelectorAll("[data-topic]")) : [];
+  const tagButtons = controls ? Array.from(controls.querySelectorAll("[data-tag]")) : [];
   const statusButtons = controls ? Array.from(controls.querySelectorAll("[data-status]")) : [];
-  const topicJumpButtons = Array.from(document.querySelectorAll("[data-topic-jump]"));
+  const tagJumpButtons = Array.from(document.querySelectorAll("[data-tag-jump]"));
   const resultBar = document.querySelector("#result-bar");
   const resultCount = document.querySelector("#result-count");
   const emptyState = document.querySelector("#empty-state");
@@ -221,7 +280,7 @@ try {
     !emptyTitle ||
     !emptyDescription ||
     !resetButton ||
-    topicButtons.length === 0 ||
+    tagButtons.length === 0 ||
     statusButtons.length === 0
   ) {
     return;
@@ -229,12 +288,11 @@ try {
 
   const state = {
     query: "",
-    topic: "all",
+    tag: "",
     status: "all",
     sort: "recent",
   };
 
-  const normalize = (value) => value.toLocaleLowerCase("ko-KR").trim();
   const paperSearchIndex = new Map(
     papers.map((paper) => [
       paper.slug,
@@ -242,8 +300,8 @@ try {
         paper.title,
         paper.citation,
         paper.review,
-        paper.topics.join(" "),
         paper.tags.join(" "),
+        paper.tags.map((tag) => `#${tag}`).join(" "),
         paper.searchText,
       ].join(" ")),
     ]),
@@ -252,6 +310,13 @@ try {
     cards.map((card) => [
       card,
       paperSearchIndex.get(card.dataset.slug) || normalize(card.dataset.search || ""),
+    ]),
+  );
+  const papersBySlug = new Map(papers.map((paper) => [paper.slug, paper]));
+  const tagKeysByCard = new Map(
+    cards.map((card) => [
+      card,
+      papersBySlug.get(card.dataset.slug)?.tagKeys || [],
     ]),
   );
 
@@ -278,11 +343,10 @@ try {
   function render() {
     const query = normalize(state.query);
     const visibleCards = cards.filter((card) => {
-      const topics = (card.dataset.topics || "").split(" ");
       const matchesQuery = query === "" || searchableText.get(card).includes(query);
-      const matchesTopic = state.topic === "all" || topics.includes(state.topic);
+      const matchesTag = state.tag === "" || tagKeysByCard.get(card).includes(state.tag);
       const matchesStatus = state.status === "all" || card.dataset.status === state.status;
-      return matchesQuery && matchesTopic && matchesStatus;
+      return matchesQuery && matchesTag && matchesStatus;
     });
 
     const sortedCards = cards.slice().sort(compareCards);
@@ -304,9 +368,6 @@ try {
     controls.hidden = libraryIsEmpty;
     controls.querySelectorAll("input, button, select").forEach((control) => {
       control.disabled = libraryIsEmpty;
-    });
-    topicJumpButtons.forEach((button) => {
-      button.disabled = !papers.some((paper) => paper.topics.includes(button.dataset.topicJump));
     });
 
     if (libraryIsEmpty) {
@@ -333,16 +394,18 @@ try {
     }
 
     clearSearchButton.hidden = state.query.length === 0;
+    setPressed(tagButtons, state.tag, "tag");
+    setPressed(tagJumpButtons, state.tag, "tagJump");
   }
 
   function resetFilters({ focusSearch = false } = {}) {
     state.query = "";
-    state.topic = "all";
+    state.tag = "";
     state.status = "all";
     state.sort = "recent";
     searchInput.value = "";
     sortSelect.value = "recent";
-    setPressed(topicButtons, "all", "topic");
+    setPressed(tagButtons, "", "tag");
     setPressed(statusButtons, "all", "status");
     render();
 
@@ -363,10 +426,9 @@ try {
     searchInput.focus();
   });
 
-  topicButtons.forEach((button) => {
+  tagButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      state.topic = button.dataset.topic;
-      setPressed(topicButtons, state.topic, "topic");
+      state.tag = button.dataset.tag;
       render();
     });
   });
@@ -384,13 +446,12 @@ try {
     render();
   });
 
-  topicJumpButtons.forEach((button) => {
+  tagJumpButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      state.topic = button.dataset.topicJump;
+      state.tag = state.tag === button.dataset.tagJump ? "" : button.dataset.tagJump;
       state.query = "";
       state.status = "all";
       searchInput.value = "";
-      setPressed(topicButtons, state.topic, "topic");
       setPressed(statusButtons, "all", "status");
       render();
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

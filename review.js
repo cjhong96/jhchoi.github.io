@@ -1,6 +1,6 @@
 (() => {
   const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-  const cacheKey = "20260810-2";
+  const cacheKey = "20260810-3";
   const statusLabels = {
     done: "정리 완료",
     reading: "읽는 중",
@@ -92,13 +92,8 @@
     statusNode.textContent = statusLabels[status];
 
     tagsNode.replaceChildren();
-    const displayTags = tags.length
-      ? tags
-      : Array.isArray(paper.topics)
-        ? paper.topics.map(toText).filter(Boolean)
-        : [];
-    displayTags.forEach((tag) => tagsNode.append(element("span", "", `#${tag.replace(/^#/, "")}`)));
-    tagsNode.hidden = displayTags.length === 0;
+    tags.forEach((tag) => tagsNode.append(element("span", "", `#${tag.replace(/^#/, "")}`)));
+    tagsNode.hidden = tags.length === 0;
 
     const updated = toText(paper.updated);
     updatedNode.textContent = /^\d{4}-\d{2}-\d{2}$/.test(updated)

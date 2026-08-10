@@ -5,10 +5,10 @@
 ## 현재 화면
 
 - 제목·카드 문장·태그·리뷰 본문 통합 검색
-- 연구 주제 및 읽기 상태 필터
+- 태그 및 읽기 상태 필터
 - 최근 업데이트·오래된 리뷰·제목순 정렬
 - 논문별 자유 형식 Markdown 리뷰
-- 주제별 컬렉션
+- 태그별 리뷰 색인
 - 모바일, 키보드 탐색, 인쇄 화면 지원
 
 라이브러리는 실제 논문 제목을 넣기 전까지 빈 상태로 표시됩니다.
@@ -33,7 +33,7 @@ papers/
 이 논문을 Markdown 리뷰로 추가해줘.
 파일 이름: my-paper-title.md
 상태: 읽는 중
-주제: inverse-design
+태그: inverse-design, rfic
 PDF 또는 DOI: ...
 ```
 
@@ -52,9 +52,8 @@ PDF 또는 DOI: ...
 title: Self Forcing: Bridging the Train-Test Gap
 citation: 저자 · 학술지 또는 학회 · 2025
 status: reading
-topics: ai-em, inverse-design
 updated: 2026-08-10
-tags: diffusion, autoregressive model
+tags: inverse-design, millimeter-wave, surrogate-model
 card:
 ---
 
@@ -74,10 +73,11 @@ card:
 - `title`: 논문 제목. 비어 있으면 카드가 만들어지지 않습니다.
 - `citation`: `저자 · 학술지 또는 학회 · 출판연도` 순서의 서지 정보
 - `status`: `done`(정리 완료), `reading`(읽는 중), `queue`(대기)
-- `topics`: `holographic`, `metasurfaces`, `inverse-design`, `ai-em` 중 하나 이상. 여러 개는 쉼표로 구분합니다.
 - `updated`: 이 리뷰를 마지막으로 수정한 날짜, `YYYY-MM-DD`
-- `tags`: 검색에 사용할 자유 태그. 여러 개는 쉼표로 구분합니다.
+- `tags`: 검색과 분류에 사용할 자유 태그. 여러 개는 쉼표로 구분합니다. 화면의 필터와 태그 색인은 이 값으로 자동 생성됩니다.
 - `card`: 카드에 별도로 보여 줄 짧은 문장. 비워도 됩니다.
+
+태그는 `inverse-design`, `rfic`, `millimeter-wave`처럼 영문 소문자와 하이픈 위주로 적는 것을 권장합니다. 한 논문에 최대 20개, 태그 하나는 최대 50자까지 사용할 수 있으며 쉼표 자체는 태그에 넣을 수 없습니다. 대소문자만 다른 태그는 같은 태그로 묶입니다.
 
 ## 리뷰 본문 작성
 
@@ -90,7 +90,7 @@ card:
 - 본문이 비어 있어도 카드는 표시되며, 상세 페이지에는 작성 전 안내가 나옵니다.
 - `url`, `noteUrl` 또는 논문별 JS 파일은 필요하지 않습니다.
 
-저장하면 논문 카드, 전체 개수, 읽는 중 개수, 최근 날짜와 주제별 개수가 자동으로 바뀝니다. 리뷰 형식은 사이트가 강제하지 않습니다.
+저장하면 논문 카드, 전체 개수, 읽는 중 개수, 최근 날짜와 태그 색인이 자동으로 바뀝니다. 리뷰 형식은 사이트가 강제하지 않습니다.
 
 ## 파일 구성
 
@@ -105,7 +105,7 @@ card:
 
 ## 디자인 참고
 
-정보 구조는 [Paperlib](https://paperlib.app/en/)의 라이브러리 패턴과 [Quartz](https://quartz.jzhao.xyz/)의 지식 노트 방식을, 시각적 톤은 [Socratica Toolbox](https://toolbox.socratica.info/)의 에디토리얼 인덱스를 참고해 새로 구성했습니다.
+목록은 [Zotero의 태그 탐색](https://www.zotero.org/support/collections_and_tags)처럼 태그 하나로 결과를 좁히고, 하단 색인은 [Stack Overflow Tags](https://stackoverflow.com/tags)와 [DEV Community Tags](https://dev.to/tags)처럼 실제로 사용된 태그와 리뷰 수를 함께 보여 줍니다. 태그는 Markdown에 적은 값에서 자동으로 만들어지므로 HTML을 따로 수정할 필요가 없습니다.
 
 ## 로컬에서 확인
 

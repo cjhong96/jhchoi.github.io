@@ -3,18 +3,13 @@ const allowedFrontMatterKeys = new Set([
   "title",
   "citation",
   "status",
-  "topics",
   "updated",
   "tags",
   "card",
 ]);
 const allowedStatuses = new Set(["done", "reading", "queue"]);
-const allowedTopics = new Set([
-  "holographic",
-  "metasurfaces",
-  "inverse-design",
-  "ai-em",
-]);
+const maxTags = 20;
+const maxTagLength = 50;
 
 const manifestUrl = new URL("./papers/index.txt", import.meta.url);
 const manifestPath = "./papers/index.txt";
@@ -229,6 +224,11 @@ function parsePaperMarkdown(source, slug) {
     throw new PaperDataError("parse", path, "title 항목이 없습니다.");
   }
 
+  const title = toText(unquote(metadata.title ?? ""));
+  if (!title) {
+    throw new PaperDataError("parse", path, "title 값을 입력해 주세요.");
+  }
+
   const markdown = lines.slice(closingLine + 1).join("\n").trimStart();
   const card = unquote(metadata.card ?? "") || extractCardText(markdown);
   const status = unquote(metadata.status ?? "queue") || "queue";
@@ -236,11 +236,27 @@ function parsePaperMarkdown(source, slug) {
     throw new PaperDataError("parse", path, `status 값을 확인해 주세요: ${status}`);
   }
 
-  const topics = [...new Set(parseList(metadata.topics ?? ""))];
-  const invalidTopic = topics.find((topic) => !allowedTopics.has(topic));
-  if (invalidTopic) {
-    throw new PaperDataError("parse", path, `topics 값을 확인해 주세요: ${invalidTopic}`);
+  const rawTags = parseList(metadata.tags ?? "");
+  if (rawTags.length > maxTags) {
+    throw new PaperDataError("parse", path, `tags는 ${maxTags}개까지 작성할 수 있습니다.`);
   }
+  const tagKeys = new Set();
+  const tags = [];
+  rawTags.forEach((value) => {
+    const tag = toText(value)
+      .normalize("NFKC")
+      .replace(/^(?:#\s*)+/, "")
+      .trim()
+      .replace(/\s+/g, " ");
+    if (!tag) return;
+    if (tag.length > maxTagLength) {
+      throw new PaperDataError("parse", path, `tags는 항목당 ${maxTagLength}자까지 작성할 수 있습니다: ${tag}`);
+    }
+    const key = tag.toLocaleLowerCase("ko-KR");
+    if (tagKeys.has(key)) return;
+    tagKeys.add(key);
+    tags.push(tag);
+  });
 
   const updated = unquote(metadata.updated ?? "");
   if (updated && !isValidDate(updated)) {
@@ -249,12 +265,11 @@ function parsePaperMarkdown(source, slug) {
 
   return {
     slug,
-    title: unquote(metadata.title ?? ""),
+    title,
     citation: unquote(metadata.citation ?? ""),
     status,
-    topics,
     updated,
-    tags: [...new Set(parseList(metadata.tags ?? ""))],
+    tags,
     review: card,
     searchText: stripMarkdown(markdown),
     markdown,

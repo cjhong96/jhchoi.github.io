@@ -18,8 +18,8 @@
 
   <title>Jaehong Choi — Paper Review Archive</title>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-  <link rel="stylesheet" href="style.css?v=20260810-10">
-  <script type="module" src="script.js?v=20260810-12"></script>
+  <link rel="stylesheet" href="style.css?v=20260810-11">
+  <script type="module" src="script.js?v=20260810-13"></script>
 </head>
 <body>
   <a class="skip-link" href="#library">논문 리뷰 목록으로 바로가기</a>
@@ -33,7 +33,7 @@
 
       <nav class="primary-nav" aria-label="주요 메뉴">
         <a href="#library" lang="en">Reviews</a>
-        <a href="#topics" lang="en">Topics</a>
+        <a href="#tags" lang="en">Tags</a>
       </nav>
 
       <p class="header-index" lang="en">RESEARCH ARCHIVE</p>
@@ -64,8 +64,8 @@
               <dd id="stat-notes">00</dd>
             </div>
             <div>
-              <dt>Topics</dt>
-              <dd id="stat-topics">00</dd>
+              <dt>Tags</dt>
+              <dd id="stat-tags">00</dd>
             </div>
             <div>
               <dt>Reading</dt>
@@ -88,7 +88,7 @@
             <p class="section-code" id="library-code" lang="en">REVIEWS / 00</p>
             <h2 id="library-title" lang="en">Paper Reviews</h2>
           </div>
-          <p>논문 리뷰를 주제와 읽기 상태별로 정리합니다.</p>
+          <p>논문 리뷰를 태그와 읽기 상태별로 정리합니다.</p>
         </div>
 
         <form class="library-tools" id="paper-controls" role="search" hidden>
@@ -107,14 +107,10 @@
             </div>
           </div>
 
-          <fieldset class="filter-group" aria-label="주제 필터">
-            <legend lang="en">Topic</legend>
-            <div class="chip-row">
-              <button type="button" class="filter-chip" data-topic="all" aria-pressed="true">All</button>
-              <button type="button" class="filter-chip" data-topic="holographic" aria-pressed="false">Holographic Antennas</button>
-              <button type="button" class="filter-chip" data-topic="metasurfaces" aria-pressed="false">Metasurfaces</button>
-              <button type="button" class="filter-chip" data-topic="inverse-design" aria-pressed="false">Inverse Design</button>
-              <button type="button" class="filter-chip" data-topic="ai-em" aria-pressed="false">AI × EM</button>
+          <fieldset class="filter-group" id="tag-filter-group" aria-label="태그 필터" hidden>
+            <legend lang="en">Tags</legend>
+            <div class="chip-row" id="tag-filter-row">
+              <button type="button" class="filter-chip" data-tag="" aria-pressed="true">All</button>
             </div>
           </fieldset>
 
@@ -142,7 +138,7 @@
 
         <div class="result-bar" id="result-bar" hidden>
           <p id="result-count" aria-live="polite">등록된 논문 리뷰가 없습니다.</p>
-          <span>검색 · 주제 · 상태 필터를 함께 반영합니다.</span>
+          <span>검색 · 태그 · 상태 필터를 함께 반영합니다.</span>
         </div>
 
         <p class="load-warning" id="paper-load-warning" role="status" hidden></p>
@@ -158,38 +154,18 @@
       </div>
     </section>
 
-    <section id="topics" class="topics section" aria-labelledby="topics-title">
+    <section id="tags" class="tags-section section" aria-labelledby="tags-title">
       <div class="container">
         <div class="section-heading section-heading--light">
           <div>
-            <p class="section-code" lang="en">RESEARCH AREAS / 04</p>
-            <h2 id="topics-title" lang="en">Research Topics</h2>
+            <p class="section-code" id="tag-index-code" lang="en">TAG INDEX / 00</p>
+            <h2 id="tags-title" lang="en">Tag Index</h2>
           </div>
-          <p>논문 리뷰를 연구 주제별로 분류합니다.</p>
+          <p>리뷰에 사용한 키워드와 관련 논문 수를 보여줍니다.</p>
         </div>
 
-        <div class="topic-grid">
-          <button class="topic-card" type="button" data-topic-jump="holographic" lang="en" disabled>
-            <span class="topic-count" data-topic-count="holographic">00 REVIEWS</span>
-            <span class="topic-name">Holographic<br>Antennas</span>
-            <span class="topic-arrow" aria-hidden="true">↘</span>
-          </button>
-          <button class="topic-card" type="button" data-topic-jump="metasurfaces" lang="en" disabled>
-            <span class="topic-count" data-topic-count="metasurfaces">00 REVIEWS</span>
-            <span class="topic-name">Tunable<br>Metasurfaces</span>
-            <span class="topic-arrow" aria-hidden="true">↘</span>
-          </button>
-          <button class="topic-card" type="button" data-topic-jump="inverse-design" lang="en" disabled>
-            <span class="topic-count" data-topic-count="inverse-design">00 REVIEWS</span>
-            <span class="topic-name">Inverse<br>Design</span>
-            <span class="topic-arrow" aria-hidden="true">↘</span>
-          </button>
-          <button class="topic-card" type="button" data-topic-jump="ai-em" lang="en" disabled>
-            <span class="topic-count" data-topic-count="ai-em">00 REVIEWS</span>
-            <span class="topic-name">AI ×<br>Electromagnetics</span>
-            <span class="topic-arrow" aria-hidden="true">↘</span>
-          </button>
-        </div>
+        <div class="tag-directory" id="tag-directory" hidden></div>
+        <p class="tag-directory-empty" id="tag-directory-empty">논문에 태그를 추가하면 이곳에 자동으로 표시됩니다.</p>
       </div>
     </section>
 
