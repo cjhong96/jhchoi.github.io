@@ -212,19 +212,6 @@ a {
   font-weight: 500;
 }
 
-.hero-description {
-  max-width: 620px;
-  margin: 28px 0 0;
-  color: var(--muted);
-  font-size: 1.05rem;
-  line-height: 1.75;
-}
-
-.hero-description strong {
-  color: var(--text);
-  font-weight: 700;
-}
-
 .hero-links {
   display: flex;
   flex-wrap: wrap;
@@ -1197,11 +1184,6 @@ a {
 
   .hero h1 {
     font-size: clamp(2.9rem, 14vw, 4.5rem);
-  }
-
-  .hero-description {
-    margin-top: 22px;
-    font-size: 0.96rem;
   }
 
   .index-card {
