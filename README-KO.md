@@ -88,12 +88,13 @@ card:
 
 - 문단, 목록, 인용, 표, 코드 블록을 일반 Markdown으로 작성할 수 있습니다.
 - 인라인 수식은 `$...$`, 블록 수식은 `$$...$$`로 작성합니다.
-- 그림을 넣는다면 `papers/my-paper-title/` 폴더를 만들고 이미지 파일을 둡니다.
-- 이미지 문법 예: `![설명](./my-paper-title/figure-01.webp)`
+- 현재 Obsidian 보관함에서 이미지를 붙여 넣으면 `assets/images/` 폴더에 자동으로 모입니다.
+- Obsidian이 삽입한 `![[Pasted image 20260810150403.png]]` 문법은 상세 리뷰 화면에서도 이미지로 표시됩니다.
+- 일반 Markdown 이미지 `![설명](../assets/images/figure-01.webp)`도 사용할 수 있습니다.
 - 본문이 비어 있어도 카드는 표시되며, 상세 페이지에는 작성 전 안내가 나옵니다.
 - `url`, `noteUrl` 또는 논문별 JS 파일은 필요하지 않습니다.
 
-`tags` 같은 위쪽 속성은 Obsidian 형식과 호환됩니다. 본문은 사이트에서도 보이게 일반 Markdown으로 작성하고, Obsidian 전용 `[[위키링크]]`, `![[임베드]]`, `%%주석%%`은 사용하지 않는 것을 권장합니다.
+`tags` 같은 위쪽 속성과 이미지 임베드 `![[이미지.png]]`는 Obsidian 형식과 호환됩니다. 일반 노트 위키링크, 이미지가 아닌 임베드와 `%%주석%%`은 아직 사이트에서 변환하지 않으므로 사용하지 않는 것을 권장합니다.
 
 저장하면 논문 카드, 전체 개수, 읽는 중 개수, 최근 날짜와 태그 색인이 자동으로 바뀝니다. 리뷰 형식은 사이트가 강제하지 않습니다.
 
@@ -102,6 +103,7 @@ card:
 - [papers/index.txt](papers/index.txt): 사이트에 표시할 Markdown 파일 이름 목록
 - [papers/template.md](papers/template.md): 새 논문용 빈 양식
 - `papers/*.md`: 기본 정보와 장문 리뷰를 함께 담는 논문별 파일
+- `assets/images/`: Obsidian에서 붙여 넣은 논문 이미지
 - `paper-data.js`: Markdown을 읽어 카드 데이터로 바꾸는 사이트 내부 코드
 - `review.html`: 모든 논문이 함께 사용하는 상세 리뷰 화면
 - `index.html`: 페이지의 고정 구조

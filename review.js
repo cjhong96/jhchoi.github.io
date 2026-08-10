@@ -1,5 +1,6 @@
 (() => {
   const cacheKey = "20260810-4";
+  const imageExtensions = new Set(["avif", "gif", "jpeg", "jpg", "png", "webp"]);
   const statusLabels = {
     done: "정리 완료",
     reading: "읽는 중",
@@ -149,6 +150,37 @@
     });
   }
 
+  function convertObsidianImageEmbeds(source) {
+    return source.replace(/!\[\[([^\]\r\n]+)\]\]/g, (match, content) => {
+      const target = content.split("|", 1)[0].trim().replace(/\\/g, "/");
+      if (!target || target.includes("#") || /[<>:"|?*\u0000-\u001F]/u.test(target)) {
+        return match;
+      }
+
+      const segments = target.split("/");
+      if (segments.some((segment) => !segment || segment === "." || segment === "..")) {
+        return match;
+      }
+
+      const fileName = segments.at(-1);
+      const extension = fileName.includes(".") ? fileName.split(".").at(-1).toLocaleLowerCase("en-US") : "";
+      if (!imageExtensions.has(extension)) return match;
+
+      const isBareFileName = segments.length === 1;
+      const isImageFolderPath = segments.length === 3
+        && segments[0] === "assets"
+        && segments[1] === "images";
+      if (!isBareFileName && !isImageFolderPath) return match;
+
+      const encodedFileName = encodeURIComponent(fileName);
+      const imagePath = `../assets/images/${encodedFileName}`;
+      const alt = fileName
+        .replace(/\.[^.]+$/, "")
+        .replace(/([\[\]\\])/g, "\\$1");
+      return `![${alt}](<${imagePath}>)`;
+    });
+  }
+
   function buildTableOfContents() {
     contentNode.querySelectorAll("h1").forEach((heading) => {
       const replacement = document.createElement("h2");
@@ -240,7 +272,9 @@
       return;
     }
     const markdown = typeof paper.markdown === "string" ? paper.markdown : "";
-    const renderableMarkdown = markdown.replace(/^\s*<!--[\s\S]*?-->\s*/, "").trim();
+    const renderableMarkdown = convertObsidianImageEmbeds(
+      markdown.replace(/^\s*<!--[\s\S]*?-->\s*/, ""),
+    ).trim();
     if (!renderableMarkdown) {
       showState("아직 리뷰 본문을 작성하지 않았습니다.");
       return;
