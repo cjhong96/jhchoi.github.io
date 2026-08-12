@@ -1,13 +1,12 @@
 ---
-title: ""
-citation: ""
-status: queue
-updated:
+title: Level set methods for gradient-free optimization of metasurface arrays
+citation: Scientific Reports
+status: reading
+updated: 2026-08-12
 tags:
   - inverse-design
 card:
 ---
-
 
 <!--
 이 파일을 복사해 papers/논문 제목.md처럼 저장하세요.

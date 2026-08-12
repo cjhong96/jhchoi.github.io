@@ -240,6 +240,17 @@ try {
       if (node) node.textContent = value;
     });
 
+    const latestLink = document.querySelector("#overview-latest-link");
+    const latestTime = document.querySelector("#stat-updated");
+    if (latestLink && latest?.slug) {
+      latestLink.href = `./review.html?paper=${encodeURIComponent(latest.slug)}`;
+      latestLink.setAttribute("aria-label", `최근 업데이트 리뷰 열기 — ${latest.title}`);
+    }
+    if (latestTime) {
+      if (latest?.updated) latestTime.dateTime = latest.updated;
+      else latestTime.removeAttribute("datetime");
+    }
+
     const archiveNotice = document.querySelector("#archive-notice");
     if (archiveNotice) {
       archiveNotice.textContent = libraryLoadFailed
@@ -260,6 +271,9 @@ try {
   const tagButtons = controls ? Array.from(controls.querySelectorAll("[data-tag]")) : [];
   const statusButtons = controls ? Array.from(controls.querySelectorAll("[data-status]")) : [];
   const tagJumpButtons = Array.from(document.querySelectorAll("[data-tag-jump]"));
+  const overviewStatusLinks = Array.from(
+    document.querySelectorAll("[data-overview-status]"),
+  );
   const resultBar = document.querySelector("#result-bar");
   const resultCount = document.querySelector("#result-count");
   const emptyState = document.querySelector("#empty-state");
@@ -323,6 +337,14 @@ try {
   function setPressed(buttons, activeValue, dataKey) {
     buttons.forEach((button) => {
       button.setAttribute("aria-pressed", String(button.dataset[dataKey] === activeValue));
+    });
+  }
+
+  function setCurrentOverviewStatus() {
+    overviewStatusLinks.forEach((link) => {
+      const isCurrent = link.dataset.overviewStatus === state.status;
+      if (isCurrent) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
     });
   }
 
@@ -395,18 +417,20 @@ try {
 
     clearSearchButton.hidden = state.query.length === 0;
     setPressed(tagButtons, state.tag, "tag");
+    setPressed(statusButtons, state.status, "status");
     setPressed(tagJumpButtons, state.tag, "tagJump");
+    setCurrentOverviewStatus();
   }
 
-  function resetFilters({ focusSearch = false } = {}) {
+  function resetFilters({ focusSearch = false, status = "all" } = {}) {
     state.query = "";
     state.tag = "";
-    state.status = "all";
+    state.status = status;
     state.sort = "recent";
     searchInput.value = "";
     sortSelect.value = "recent";
     setPressed(tagButtons, "", "tag");
-    setPressed(statusButtons, "all", "status");
+    setPressed(statusButtons, status, "status");
     render();
 
     if (focusSearch) searchInput.focus();
@@ -459,6 +483,12 @@ try {
         behavior: reduceMotion ? "auto" : "smooth",
         block: "start",
       });
+    });
+  });
+
+  overviewStatusLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      resetFilters({ status: link.dataset.overviewStatus });
     });
   });
 

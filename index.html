@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Jaehong Choi의 안테나, 전자기학, 역설계 및 AI 분야 논문 리뷰 아카이브입니다.">
-  <meta name="theme-color" content="#f6f6f3">
+  <meta name="theme-color" content="#ffffff">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="Jaehong Choi — Paper Review Archive">
   <meta property="og:description" content="안테나, 전자기학, 역설계 및 AI 분야의 논문 리뷰 아카이브.">
   <meta property="og:url" content="https://cjhong96.github.io/jhchoi.github.io/">
-  <meta property="og:image" content="https://cjhong96.github.io/jhchoi.github.io/assets/og-paper-log-calm.png">
+  <meta property="og:image" content="https://cjhong96.github.io/jhchoi.github.io/assets/og-paper-review-white.png">
   <meta property="og:image:width" content="1731">
   <meta property="og:image:height" content="909">
   <meta property="og:image:alt" content="JH Paper Review Archive cover">
@@ -18,8 +18,8 @@
 
   <title>Jaehong Choi — Paper Review Archive</title>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-  <link rel="stylesheet" href="style.css?v=20260810-11">
-  <script type="module" src="script.js?v=20260810-14"></script>
+  <link rel="stylesheet" href="style.css?v=20260812-13">
+  <script type="module" src="script.js?v=20260812-15"></script>
 </head>
 <body>
   <a class="skip-link" href="#library">논문 리뷰 목록으로 바로가기</a>
@@ -45,37 +45,49 @@
       <div class="container hero-grid">
         <div class="hero-copy">
           <p class="kicker" lang="en">JAEHONG CHOI · RESEARCH NOTES</p>
-          <h1 id="hero-title" lang="en">
-            <span>Paper Review</span>
-            <span>Archive</span>
-          </h1>
+          <h1 id="hero-title" lang="en">Paper Review Archive</h1>
           <p class="hero-summary">안테나·전자기학, 역설계, AI 분야의 논문 리뷰와 읽기 기록을 정리합니다.</p>
         </div>
 
-        <aside class="index-card" aria-label="현재 아카이브 현황">
+        <aside class="index-card" aria-labelledby="overview-title">
           <div class="index-card-topline" lang="en">
-            <span>ARCHIVE OVERVIEW</span>
+            <span>QUICK ACCESS</span>
             <span>2026</span>
           </div>
-          <p class="index-card-title">논문 리뷰 현황</p>
-          <dl class="archive-stats" lang="en">
-            <div>
-              <dt>Reviews</dt>
-              <dd id="stat-notes">00</dd>
-            </div>
-            <div>
-              <dt>Tags</dt>
-              <dd id="stat-tags">00</dd>
-            </div>
-            <div>
-              <dt>Reading</dt>
-              <dd id="stat-reading">00</dd>
-            </div>
-            <div>
-              <dt>Updated</dt>
-              <dd id="stat-updated">—</dd>
-            </div>
-          </dl>
+          <p class="index-card-title" id="overview-title">아카이브 탐색</p>
+          <nav class="archive-controls" aria-label="아카이브 바로가기">
+            <a
+              class="archive-control"
+              href="#library"
+              data-overview-status="all"
+              aria-label="전체 논문 리뷰 보기"
+            >
+              <span class="archive-control-label" lang="en">Reviews <span aria-hidden="true">↓</span></span>
+              <strong class="archive-control-value" id="stat-notes">00</strong>
+            </a>
+            <a class="archive-control" href="#tags" aria-label="태그 색인 보기">
+              <span class="archive-control-label" lang="en">Tags <span aria-hidden="true">↓</span></span>
+              <strong class="archive-control-value" id="stat-tags">00</strong>
+            </a>
+            <a
+              class="archive-control"
+              href="#library"
+              data-overview-status="reading"
+              aria-label="읽는 중인 논문 리뷰 보기"
+            >
+              <span class="archive-control-label" lang="en">Reading <span aria-hidden="true">↓</span></span>
+              <strong class="archive-control-value" id="stat-reading">00</strong>
+            </a>
+            <a
+              class="archive-control"
+              id="overview-latest-link"
+              href="#library"
+              aria-label="최근 업데이트 리뷰 보기"
+            >
+              <span class="archive-control-label" lang="en">Updated <span aria-hidden="true">↗</span></span>
+              <time class="archive-control-value" id="stat-updated">—</time>
+            </a>
+          </nav>
           <p class="archive-notice" id="archive-notice">논문을 추가하면 아카이브 통계가 자동으로 갱신됩니다.</p>
         </aside>
       </div>
