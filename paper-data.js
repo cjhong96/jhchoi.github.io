@@ -335,7 +335,6 @@ function parsePaperMarkdown(source, slug) {
     review: card,
     searchText: stripMarkdown(markdown),
     markdown,
-    source: "markdown",
   };
 }
 
@@ -375,8 +374,7 @@ async function mapWithLimit(values, task) {
   return results;
 }
 
-export async function loadPapers(cacheKey = Date.now()) {
-  void cacheKey;
+export async function loadPapers() {
   const manifest = await loadManifest();
   const results = await mapWithLimit(manifest.slugs, async (slug) => {
     try {
@@ -403,8 +401,7 @@ export async function loadPapers(cacheKey = Date.now()) {
   };
 }
 
-export async function loadPaper(slug, cacheKey = Date.now()) {
-  void cacheKey;
+export async function loadPaper(slug) {
   if (!isValidPaperName(slug)) {
     return { registered: false, paper: null, failures: [], failureDetails: [] };
   }

@@ -60,8 +60,16 @@ card: Uniplanar 구조에서 binary pixel 기반 형상의 최적화 방법론�
 	2. CNN emulator가 각 구조의 S-parameter를 예측
 	3. PA의 target load와 insertion loss를 반영한 cost로 구조를 평가한 뒤 GA population을 갱신
 - Cost function은 아래와 같음
-	- ![[Pasted image 20260812132805.png]]
-	- a는 가중치이며, Z_L과 Z_Opt는 복소 켤례를 보정하기 위한 term이다
+
+$$
+\sum_{i=1}^{N}
+a_1(i)\times\left|Z_L(i)-Z_{\mathrm{Opt}}(i)\right|
++a_2(i)\times\left[1-\left|s_{21}(i)\right|\right]^2
+\tag{1}
+$$
+
+- $a_1(i)$와 $a_2(i)$는 주파수별 가중치이며, $Z_L(i)$과 $Z_{\mathrm{Opt}}(i)$의 차이는 impedance mismatch를 나타냄
+- $\left[1-\left|s_{21}(i)\right|\right]^2$ 항은 insertion loss를 반영
 - 구조적인 제약 조건
 	- PA port와 VDD 사이에 DC path가 없는 topology에는 penalty를 부여
 	- DC blocking을 위한 MIM capacitor 값도 pixel topology와 함께 최적화

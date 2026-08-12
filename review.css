@@ -99,8 +99,8 @@
 
 .review-toc ol {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 7px 24px;
+  grid-template-columns: 1fr;
+  gap: 8px;
   margin: 0;
   padding-left: 20px;
 }
@@ -108,10 +108,6 @@
 .review-toc li {
   color: var(--muted);
   font-size: 0.82rem;
-}
-
-.review-toc li[data-level="3"] {
-  margin-left: 14px;
 }
 
 .review-toc a {
@@ -289,10 +285,6 @@
   .review-meta time {
     width: 100%;
     margin-left: 0;
-  }
-
-  .review-toc ol {
-    grid-template-columns: 1fr;
   }
 
   .review-content {

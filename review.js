@@ -1,5 +1,5 @@
 (() => {
-  const cacheKey = "20260810-4";
+  const cacheKey = "20260812-5";
   const imageExtensions = new Set(["avif", "gif", "jpeg", "jpg", "png", "webp"]);
   const statusLabels = {
     done: "정리 완료",
@@ -73,7 +73,7 @@
   function renderMetadata(paper) {
     const title = toText(paper.title);
     const citation = toText(paper.citation);
-    const review = toText(paper.review) || toText(paper.summary);
+    const review = toText(paper.review);
     const status = Object.hasOwn(statusLabels, paper.status) ? paper.status : "queue";
     const tags = Array.isArray(paper.tags)
       ? paper.tags.map(toText).filter(Boolean)
@@ -195,7 +195,6 @@
       const id = `section-${String(index + 1).padStart(2, "0")}`;
       heading.id = id;
       const item = element("li", "");
-      item.dataset.level = heading.tagName === "H3" ? "3" : "2";
       const label = heading.textContent
         .replace(/\$\$([\s\S]*?)\$\$/g, "$1")
         .replace(/\$([^$]+?)\$/g, "$1")
@@ -228,7 +227,7 @@
     let loadResult;
     try {
       const { loadPaper } = await import(`./paper-data.js?v=${cacheKey}`);
-      loadResult = await loadPaper(slug, cacheKey);
+      loadResult = await loadPaper(slug);
     } catch (error) {
       console.error("논문 목록을 불러오지 못했습니다.", error);
       showPageError(
