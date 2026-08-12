@@ -7,11 +7,11 @@ tags:
   - inverse-design
   - rfic
   - deep-learning
-card:
+card: Uniplanar 구조에서 binary pixel 기반 형상의 최적화 방법론을 소개하기 위한 논문 리뷰. CNN 기반으로 Forward 모델을 설계했으며, 최적화는 Genetic Algorithm 사용
 ---
 ### Topology 관점 Review
 
-## 1. 서론
+## 서론
 - ![[Pasted image 20260810150403.png]]
 - EM topology가 제한된 상황에서 고전적인 inverse design을 진행 했을 때, 모든 공간을 Searching 하는 것이 아니기 때문에 달성 가능한 회로 성능을 제한
 - Nanophotonics에서 제안 된 Top-down 방식의 inverse design은 직관적이지 않은 구조로부터 기존 topology의 한계를 뛰어 넘을 수 있음
@@ -21,10 +21,13 @@ card:
 	- Transfer learning을 통한 모델 재가용성
 	- Forward model(CNN)과 Genertic algorithm(GA)를 통한 정합과정
 
-## 2. Deep CNN by EM Emulator 
+## Deep CNN by EM Emulator
 - ![[Pasted image 20260810153507.png]]
 - Planar 구조를 16x16 pixel로 배치하여 binary state를 구성
+- 300×300 μm의 uniplanar 영역을 16×16으로 이산화하며, 각 pixel의 metal 유무가 topology를 결정
 - 16x16 cell 외각에 VDD 2개, Port1, 2를 위한 edge 성분을 만들며, 임의로 선정할 수 있도록 자유도 주입
+	- PA feed, output feed, 상·하단 VDD 위치도 각각 16개 후보 중에서 함께 탐색
+	- 전체 탐색 공간은 pixel state와 feed 위치를 합쳐 $2^{256}\times16^4$
 - CNN 구조
 	- ![[Pasted image 20260810154954.png]]
 	- Output은 확인하고자 하는 주파수의 S parameter의 실/허수 값들을 사용하므로 2D matrix 형태 (N_freq x N_Sparameter)의 형태를 갖음
@@ -37,6 +40,7 @@ card:
 	- 유전체를 제외한 금속으로 EM full wave 시뮬레이션을 진행해서 대량의 데이터 확보. 이를 통해 Scratch 학습 진행
 	- 이후, 유전체가 반영된 모델에 대한 시뮬레이션 데이터 확보. Scratch model로부터 Transfer learning 진행
 	- Scale down 혹은 scale  up에 대해서도 같은 방식으로 Transfer learning 진행
+- Pixel 수가 증가하면 표현 가능한 topology는 많아지지만, 학습 데이터와 시뮬레이션 비용도 함께 증가하므로 본 논문에서는 16×16을 사용
 - 학습 모델은 Training/Test set에 대한 RMSE 차이가 margin 안으로 들어가는 layer 선택
 	- ![[Pasted image 20260810161416.png]]
 	- Layer setting
@@ -47,10 +51,18 @@ card:
 	- EM simulator by CNN vs Full wave simulation
 		- 실제 시뮬레이션 데이터와 비교해서 S parameter 측면에서 큰 차이가 없는 것을 확인 할 수 있음
 			- ![[Pasted image 20260810170658.png|525]]
-## 3. PA와 CNN model을 이용한 inverse design
+## PA와 CNN model을 이용한 inverse design
 - 앞서 matching network만을 설계하는 것과 달리 PA 특성과같이 결합하여 Output matching network(OMN) 설계
+- Inverse design의 대상은 PA 전체 topology가 아니라 OMN이며, 2-stage common-base PA cell의 topology는 고정
 -  Inverse design에서 Tandem 방식의 network 방식도 언급했지만 GA 기반으로 최종 선택
+- 전체 탐색 과정
+	1. GA가 binary pixel map과 port/VDD 위치를 생성
+	2. CNN emulator가 각 구조의 S-parameter를 예측
+	3. PA의 target load와 insertion loss를 반영한 cost로 구조를 평가한 뒤 GA population을 갱신
 - Cost function은 아래와 같음
 	- ![[Pasted image 20260812132805.png]]
 	- a는 가중치이며, Z_L과 Z_Opt는 복소 켤례를 보정하기 위한 term이다
+- 구조적인 제약 조건
+	- PA port와 VDD 사이에 DC path가 없는 topology에는 penalty를 부여
+	- DC blocking을 위한 MIM capacitor 값도 pixel topology와 함께 최적화
 - ![[Pasted image 20260812133006.png]]
